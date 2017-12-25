@@ -9,6 +9,7 @@
   "devDependencies": {
     "@commitlint/cli": "^5.2.6",
     "@commitlint/config-angular": "^5.1.1",
+    "ava": "^0.24.0",
     "eslint": "^4.14.0",
     "eslint-config-airbnb-base": "^12.1.0",
     "eslint-config-prettier": "^2.9.0",
@@ -18,7 +19,7 @@
     "prettier": "^1.9.2"
   },
   "scripts": {
-    "test": "echo No tests yet.",
+    "test": "ava",
     "postrewrite": "yarn git-hook",
     "precommit": "yarn git-hook",
     "commitmsg": "commitlint -e",
@@ -30,5 +31,6 @@
     "commitizen": {
       "path": "@commitlint/prompt"
     }
-  }
+  },
+  "dependencies": {}
 }
