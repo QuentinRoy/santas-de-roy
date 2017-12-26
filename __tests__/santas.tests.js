@@ -1,8 +1,8 @@
 const test = require('ava');
 const {
   findLeastSantas,
-  findPotentialSantas,
-  findFirstParticipantWithLeastSantas,
+  findPossibleSantas,
+  getParticipantsSortedPerSantas,
 } = require('../modules/santas');
 
 test('findAvailableSantas will find the available Santas for a participant', t => {
@@ -64,13 +64,14 @@ test('findAvailableSantas will find the available Santas for a participant', t =
 });
 
 test('findPotentialSantas filters out participants that cannot be the santa of a participant', t => {
-  t.deepEqual(
-    findPotentialSantas({}, ['louis', 'bob', 'anna', 'lucy'], 'bob'),
-    ['louis', 'anna', 'lucy'],
-  );
+  t.deepEqual(findPossibleSantas({}, ['louis', 'bob', 'anna', 'lucy'], 'bob'), [
+    'louis',
+    'anna',
+    'lucy',
+  ]);
 
   t.deepEqual(
-    findPotentialSantas(
+    findPossibleSantas(
       { louis: ['bob', 'anna'], bob: ['lucy'] },
       ['louis', 'bob', 'anna', 'lucy'],
       'bob',
@@ -79,14 +80,16 @@ test('findPotentialSantas filters out participants that cannot be the santa of a
   );
 });
 
-test('findFirstParticipantWithLeastSantas find the first participant with the least santas', t => {
-  t.is(
-    findFirstParticipantWithLeastSantas({
+test('getParticipantsSortedPerSantas properly sorts the participants', t => {
+  t.deepEqual(
+    getParticipantsSortedPerSantas({
       bob: ['anna', 'lucy'],
       max: ['bob'],
       anna: ['bob', 'lucy'],
       lucy: ['anna'],
+      ying: ['bob', 'lucy', 'anna'],
+      louis: [],
     }),
-    'max',
+    ['louis', 'max', 'lucy', 'bob', 'anna', 'ying'],
   );
 });

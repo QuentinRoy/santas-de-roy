@@ -1,3 +1,5 @@
+const traverse = require('./traverse');
+
 /**
  * Find the participants that have been the least the Santa of a participant.
  *
@@ -25,6 +27,8 @@ const findLeastSantas = (pastSantas, potentialSantas, participant) => {
 };
 
 /**
+ * Find all the participants that can be the Santa of a participant.
+ *
  * @param {Object.<string, string[]>} blackList Maps the id of a participant
  * with the the id of the other participants he should not be the Santa.
  * @param {string[]} participants The id of all participants.
@@ -32,7 +36,7 @@ const findLeastSantas = (pastSantas, potentialSantas, participant) => {
  * @return {string[]} Find all participants that can be Santa for this
  * participant.
  */
-const findPotentialSantas = (blackList, participants, participant) =>
+const findPossibleSantas = (blackList, participants, participant) =>
   participants.filter(
     p =>
       p !== participant &&
@@ -53,7 +57,7 @@ const findPotentialSantas = (blackList, participants, participant) =>
 const findLeastSantasForAll = (pastSantas, blackList, participants) =>
   Object.assign(
     ...participants.map(participant => {
-      const potentialSantas = findPotentialSantas(
+      const potentialSantas = findPossibleSantas(
         blackList,
         participants,
         participant,
@@ -63,21 +67,16 @@ const findLeastSantasForAll = (pastSantas, blackList, participants) =>
   );
 
 /**
- * Find one of the participants with the least possible Santas.
- *
- * @param {Object<string, string[]>} participantSantas The possible Santas of
- * each participants.
- * @return {string} The id of the first participant found with the least
- * Santas.
+ * @param {Object<string, string[]>} participantsLeastSantas A dictionary
+ * mapping each participant's id with a list of the other participants that can
+ * be their Santa.
+ * @return {string[]} The list of all participants sorted by the number of
+ * possible Santas they have
  */
-const findFirstParticipantWithLeastSantas = participantSantas =>
-  Object.entries(participantSantas).reduce(
-    (current, [participant, santas]) =>
-      !current || santas.length < current.min
-        ? { min: santas.length, participant }
-        : current,
-    null,
-  ).participant;
+const getParticipantsSortedPerSantas = participantsLeastSantas =>
+  Object.entries(participantsLeastSantas)
+    .sort((e1, e2) => e1[1].length - e2[1].length)
+    .map(e => e[0]);
 
 /**
  * Generate a new secret Santa attributions based on past attributions and
@@ -98,13 +97,33 @@ const findFirstParticipantWithLeastSantas = participantSantas =>
  * @return {{}[]} The new attributions
  */
 const generateSantas = (pastSantas, blackList, participants) => {
-  throw new Error('Not yet implemented');
+  const participantsSantas = findLeastSantasForAll(
+    pastSantas,
+    blackList,
+    participants,
+  );
+  // Sort the participants per number of possible Santas. They are the harder
+  // to find Santas to so it is better to look at them first in the tree.
+  const sortedParticipants = getParticipantsSortedPerSantas(participantsSantas);
+  // `traverse` explores an unknown tree to find an acceptable branch.
+  // The value of each node will be a Santa whose recipient is the d-th
+  // participant of `participants` where d is the depth of the node.
+  return traverse({
+    // The name of each level of the tree that must find a corresponding value.
+    levels: sortedParticipants.length,
+    // This function must return the children of the last node of `branch`, that
+    // is the possible Santas of the n-th participant with n being the depth
+    // of the branch.
+    getNodeChildren(node, level, branch) {
+      return participantsSantas[level].filter(santa => !branch.includes(santa));
+    },
+  });
 };
 
 module.exports = {
   findLeastSantas,
-  findPotentialSantas,
+  findPossibleSantas,
   findLeastSantasForAll,
   generateSantas,
-  findFirstParticipantWithLeastSantas,
+  getParticipantsSortedPerSantas,
 };
