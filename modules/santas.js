@@ -46,6 +46,31 @@ const findPotentialReceivers = (families, santa) =>
     return familyArray.includes(santa) ? result : [...result, ...familyArray];
   }, []);
 
+const getTraverseNodeChildren = (participants, santaMappings, branch) => {
+  // Case all santas have a receiver -> the branch is done -> return [].
+  if (branch.length === participants.length) {
+    return [];
+  }
+  // Fetch the santa corresponding the node depth. This is the santa that
+  // needs a receiver.
+  const santa = participants[branch.length];
+  // Find the potential receivers of this santa. `santaMappings` will contain
+  // this santa potential receivers, to which needs to be remove all receivers
+  // that have already been assigned.
+  const potentialReceivers = santaMappings[santa].filter(mapping =>
+    branch.every(node => node.receiver !== mapping.receiver),
+  );
+  // If there is no possible receivers even though not all santas have a
+  // receiver this branch isn't working -> return null.
+  if (!potentialReceivers.length) return null;
+  // Create the node's children from the potential receivers.
+  return potentialReceivers.map(m => ({
+    santa,
+    cost: m.count,
+    receiver: m.receiver,
+  }));
+};
+
 /**
  * Generate a new secret Santa attributions based on past attributions and
  * available participants.
@@ -68,7 +93,6 @@ const generateSantas = (pastChristmas, families) => {
     ...result,
     ...(Array.isArray(family) ? family : [family]),
   ]);
-  const n = participants.length;
   const santaMappingsForAll = Object.assign(
     ...participants.map(p => {
       const receivers = findPotentialReceivers(families, p);
@@ -85,21 +109,7 @@ const generateSantas = (pastChristmas, families) => {
     // is the possible Santas of the n-th participant with n being the depth
     // of the branch.
     getNodeChildren(branch) {
-      const depth = branch.length;
-      if (depth === n) {
-        return [];
-      }
-      const santa = participants[branch.length];
-      const children = santaMappingsForAll[santa].filter(mapping =>
-        branch.every(node => node.receiver !== mapping.receiver),
-      );
-      return children.length
-        ? children.map(m => ({
-            cost: m.count,
-            receiver: m.receiver,
-          }))
-        : // null indicates that the branch has failed and should not be kept.
-          null;
+      return getTraverseNodeChildren(participants, santaMappingsForAll, branch);
     },
   });
   return {
@@ -116,4 +126,5 @@ module.exports = {
   generateSantas,
   getSantaMappings,
   getSantaReceiverMappingCount,
+  getTraverseNodeChildren,
 };
