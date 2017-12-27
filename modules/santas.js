@@ -1,82 +1,50 @@
 const traverse = require('./traverse');
 
 /**
- * Find the participants that have been the least the Santa of a participant.
- *
- * @param {{}[]} pastSantas An array containing the previous attributions.
- * @param {string[]} potentialSantas The list of potential Santas.
- * @param {string} participant The name of the participant.
- * @return {string[]} The name of the participants that can be the santa of
- * this participant.
+ * @param {{}[]} pastChristmas An array containing the previous Santa
+ * attributions.
+ * @param {string} santa A participant id.
+ * @param {string} receiver An other participant id.
+ * @return {number} The number of time santa has been the santa of receiver
+ * in the past.
  */
-const findLeastSantas = (pastSantas, potentialSantas, participant) => {
-  // Look up the number of time each other participants have been the santa
-  // of participant.
-  const santaCounts = potentialSantas.map(potentialSanta => ({
-    potentialSanta,
-    count: pastSantas.filter(
-      attribution => attribution[potentialSanta] === participant,
-    ).length,
+const getSantaReceiverMappingCount = (pastChristmas, santa, receiver) =>
+  pastChristmas.reduce(
+    (sum, christmas) => sum + (christmas[santa] === receiver ? 1 : 0),
+    0,
+  );
+
+/**
+ * @param {{}[]} pastChristmas An array containing the previous Santa
+ * attributions.
+ * @param {string[]} possibleReceivers The id of all participants that `santa`
+ * can be a Santa of.
+ * @param {string} santa The santa to attribute.
+ * @return {{cost:number, receiver:string, count:count}[]} The mapping
+ */
+const getSantaMappings = (pastChristmas, possibleReceivers, santa) => {
+  const santaReceiverMappingCounts = possibleReceivers.map(receiver =>
+    getSantaReceiverMappingCount(pastChristmas, santa, receiver),
+  );
+  return possibleReceivers.map((receiver, i) => ({
+    count: santaReceiverMappingCounts[i],
+    receiver,
   }));
-  // Return the list of participants who have been the least the santa of
-  // participant.
-  const minCount = Math.min(...santaCounts.map(c => c.count));
-  return santaCounts
-    .filter(c => c.count === minCount)
-    .map(c => c.potentialSanta);
 };
 
 /**
- * Find all the participants that can be the Santa of a participant.
+ * Finds the participants a potential santa can be the santa of.
  *
- * @param {Object.<string, string[]>} blackList Maps the id of a participant
- * with the the id of the other participants he should not be the Santa.
- * @param {string[]} participants The id of all participants.
- * @param {string} participant The id of a participant.
- * @return {string[]} Find all participants that can be Santa for this
- * participant.
+ * @param {Array.<string[]|string>} families The list of all participants sorted
+ * by families
+ * @param {string} santa The id of a participant to be a santa.
+ * @return {string[]} The participants this santa can be the santa of.
  */
-const findPossibleSantas = (blackList, participants, participant) =>
-  participants.filter(
-    p =>
-      p !== participant &&
-      !(blackList[p] && blackList[p].includes(participant)),
-  );
-
-/**
- * For all participants, find the participants that have been the least their
- * Santa.
- *
- * @param {{}[]} pastSantas An array containing the previous Santa attributions.
- * @param {Object.<string, string[]>} blackList Maps the id of a participant
- * with the the id of the other participants he should not be the Santa.
- * @param {string[]} participants The id of all participants.
- * @return {Object<string, string[]>} A dictionary mapping each participant's
- * id with a list of the other participants that can be their Santa.
- */
-const findLeastSantasForAll = (pastSantas, blackList, participants) =>
-  Object.assign(
-    ...participants.map(participant => {
-      const potentialSantas = findPossibleSantas(
-        blackList,
-        participants,
-        participant,
-      );
-      return findLeastSantas(pastSantas, potentialSantas, participant);
-    }),
-  );
-
-/**
- * @param {Object<string, string[]>} participantsLeastSantas A dictionary
- * mapping each participant's id with a list of the other participants that can
- * be their Santa.
- * @return {string[]} The list of all participants sorted by the number of
- * possible Santas they have
- */
-const getParticipantsSortedPerSantas = participantsLeastSantas =>
-  Object.entries(participantsLeastSantas)
-    .sort((e1, e2) => e1[1].length - e2[1].length)
-    .map(e => e[0]);
+const findPotentialReceivers = (families, santa) =>
+  families.reduce((result, family) => {
+    const familyArray = Array.isArray(family) ? family : [family];
+    return familyArray.includes(santa) ? result : [...result, ...familyArray];
+  }, []);
 
 /**
  * Generate a new secret Santa attributions based on past attributions and
@@ -90,40 +58,62 @@ const getParticipantsSortedPerSantas = participantsLeastSantas =>
  * Also supports black-listing: some participants that may never be the Santa
  * of some others.
  *
- * @param {{}[]} pastSantas An array containing the previous attributions.
- * @param {Object.<string, string[]>} blackList Maps the id of a participant
- * with the the id of the other participants he should not be the Santa.
- * @param {string[]} participants The id of all participants.
+ * @param {{}[]} pastChristmas An array containing the previous attributions.
+ * @param {Array.<string[]|string>} families The list of all participants sorted
+ * by families.
  * @return {{}[]} The new attributions
  */
-const generateSantas = (pastSantas, blackList, participants) => {
-  const participantsSantas = findLeastSantasForAll(
-    pastSantas,
-    blackList,
-    participants,
+const generateSantas = (pastChristmas, families) => {
+  const participants = families.reduce((result, family) => [
+    ...result,
+    ...(Array.isArray(family) ? family : [family]),
+  ]);
+  const n = participants.length;
+  const santaMappingsForAll = Object.assign(
+    ...participants.map(p => {
+      const receivers = findPotentialReceivers(families, p);
+      return {
+        [p]: getSantaMappings(pastChristmas, receivers, p),
+      };
+    }),
   );
-  // Sort the participants per number of possible Santas. They are the harder
-  // to find Santas to so it is better to look at them first in the tree.
-  const sortedParticipants = getParticipantsSortedPerSantas(participantsSantas);
   // `traverse` explores an unknown tree to find an acceptable branch.
   // The value of each node will be a Santa whose recipient is the d-th
   // participant of `participants` where d is the depth of the node.
-  return traverse({
-    // The name of each level of the tree that must find a corresponding value.
-    levels: sortedParticipants.length,
+  const result = traverse({
     // This function must return the children of the last node of `branch`, that
     // is the possible Santas of the n-th participant with n being the depth
     // of the branch.
-    getNodeChildren(node, level, branch) {
-      return participantsSantas[level].filter(santa => !branch.includes(santa));
+    getNodeChildren(branch) {
+      const depth = branch.length;
+      if (depth === n) {
+        return [];
+      }
+      const santa = participants[branch.length];
+      const children = santaMappingsForAll[santa].filter(mapping =>
+        branch.every(node => node.receiver !== mapping.receiver),
+      );
+      return children.length
+        ? children.map(m => ({
+            cost: m.count,
+            receiver: m.receiver,
+          }))
+        : // null indicates that the branch has failed and should not be kept.
+          null;
     },
   });
+  return {
+    santas: Object.assign(
+      ...result.branch.map((node, i) => ({ [participants[i]]: node.receiver })),
+    ),
+    cost: result.cost,
+    optimal: result.optimal,
+  };
 };
 
 module.exports = {
-  findLeastSantas,
-  findPossibleSantas,
-  findLeastSantasForAll,
+  findPotentialReceivers,
   generateSantas,
-  getParticipantsSortedPerSantas,
+  getSantaMappings,
+  getSantaReceiverMappingCount,
 };

@@ -1,34 +1,70 @@
 const test = require('ava');
-const { stub } = require('sinon');
+const { spy } = require('sinon');
 const traverse = require('../modules/traverse');
 
-test('traverse find a possible branch', t => {
-  // prettier-ignore
-  const getNodeChildren = stub()
-    .onCall(0).returns(['b1', 'b2', 'b3'])
-    .onCall(1).returns([])
-    .onCall(2).returns(['c1'])
-    .onCall(3).returns([])
-    .onCall(4).returns(['c2'])
-    .onCall(5).returns(['d1', 'd2'])
-    .throws(new Error('Called too many times'));
-
-  t.deepEqual(
-    traverse({ levels: ['a', 'b', 'c', 'd'], init: ['a2'], getNodeChildren }),
-    {
-      branch: ['a2', 'b3', 'c2', 'd1'],
-      depth: 4,
-      isComplete: true,
-      failedBranch: 2,
+test('traverse', t => {
+  const tree = {
+    cost: 0,
+    children: {
+      '1': {
+        cost: 0,
+        children: {
+          '1.1': {
+            cost: 1,
+            children: {
+              '1.1.1': { cost: 1, failed: true },
+            },
+          },
+          '1.2': {
+            cost: 1,
+            children: {
+              '1.1.2': { cost: 1 },
+            },
+          },
+        },
+      },
+      '2': {
+        cost: 1,
+        children: {
+          '2.1': { cost: 0, failed: true },
+          '2.2': { cost: 0 },
+        },
+      },
+      '3': {
+        cost: 0,
+        children: {
+          '3.1': { cost: 3 },
+          '3.2': {
+            cost: 1,
+            children: {
+              '3.1.1': { cost: 1 },
+              '3.1.2': {
+                cost: 0,
+              },
+            },
+          },
+        },
+      },
     },
-  );
-  t.deepEqual(getNodeChildren.args, [
-    ['a2', 'b', ['a2']],
-    ['b1', 'c', ['a2', 'b1']],
-    ['b2', 'c', ['a2', 'b2']],
-    ['c1', 'd', ['a2', 'b2', 'c1']],
-    ['b3', 'c', ['a2', 'b3']],
-    ['c2', 'd', ['a2', 'b3', 'c2']],
-  ]);
-  t.is(getNodeChildren.callCount, 6);
+  };
+
+  const getNodeChildren = spy(branch => {
+    const node = branch.reduce(
+      (currentNode, child) => currentNode.children[child.name],
+      tree,
+    );
+    if (node.failed) return null;
+    return Object.entries(node.children || {}).map(([childName, child]) => ({
+      name: childName,
+      cost: child.cost,
+    }));
+  });
+
+  t.deepEqual(traverse({ getNodeChildren }), {
+    branch: [{ name: '2', cost: 1 }, { name: '2.2', cost: 0 }],
+    depth: 2,
+    cost: 1,
+    explored: 5,
+    failed: 2,
+  });
 });

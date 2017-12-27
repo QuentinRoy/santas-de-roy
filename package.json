@@ -33,5 +33,7 @@
       "path": "@commitlint/prompt"
     }
   },
-  "dependencies": {}
+  "dependencies": {
+    "js-yaml": "^3.10.0"
+  }
 }
