@@ -151,7 +151,17 @@ const generateSantas = (pastChristmas, families) => {
   });
   return {
     santas: Object.assign(
-      ...result.branch.map((node, i) => ({ [participants[i]]: node.receiver })),
+      ...result.branch
+        .map((node, i) => ({
+          santa: participants[i],
+          receiver: node.receiver,
+        }))
+        .sort((a, b) => {
+          if (a.santa < b.santa) return -1;
+          if (a.santa > b.santa) return 1;
+          return 0;
+        })
+        .map(({ santa, receiver }) => ({ [santa]: receiver })),
     ),
     cost: result.cost,
     explored: result.explored,
