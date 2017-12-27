@@ -1,4 +1,5 @@
 const traverse = require('./traverse');
+const shuffle = require('lodash/shuffle');
 
 /**
  * @param {{}[]} pastChristmas An array containing the previous Santa
@@ -26,10 +27,11 @@ const getSantaMappings = (pastChristmas, possibleReceivers, santa) => {
   const santaReceiverMappingCounts = possibleReceivers.map(receiver =>
     getSantaReceiverMappingCount(pastChristmas, santa, receiver),
   );
-  return possibleReceivers.map((receiver, i) => ({
-    count: santaReceiverMappingCounts[i],
-    receiver,
-  }));
+  return Object.assign(
+    ...possibleReceivers.map((receiver, i) => ({
+      [receiver]: santaReceiverMappingCounts[i],
+    })),
+  );
 };
 
 /**
@@ -43,32 +45,62 @@ const getSantaMappings = (pastChristmas, possibleReceivers, santa) => {
 const findPotentialReceivers = (families, santa) =>
   families.reduce((result, family) => {
     const familyArray = Array.isArray(family) ? family : [family];
+    // If this participant is part of the family, he/she cannot be the santa
+    // of anyone in this family.
     return familyArray.includes(santa) ? result : [...result, ...familyArray];
   }, []);
 
-const getTraverseNodeChildren = (participants, santaMappings, branch) => {
+const getRemainingReceivers = (participants, parentBranch) =>
+  participants.filter(p => !parentBranch.find(n => n.receiver === p));
+
+const getRemainingSantas = (participants, parentBranch) =>
+  participants.slice(parentBranch.length);
+
+const getSubBranchOptimalCost = (
+  participants,
+  allSantaMappings,
+  parentBranch,
+) => {
+  const remainingReceivers = getRemainingReceivers(participants, parentBranch);
+  const remainingSantas = getRemainingSantas(participants, parentBranch);
+  return remainingSantas.reduce((acc, santa) => {
+    const santaMappings = allSantaMappings[santa];
+    return (
+      acc +
+      Math.min(
+        ...remainingReceivers.map(
+          r =>
+            santaMappings[r] == null
+              ? Number.POSITIVE_INFINITY
+              : santaMappings[r],
+        ),
+      )
+    );
+  }, 0);
+};
+
+const getTraverseNodeChildren = (participants, allSantaMappings, parents) => {
   // Case all santas have a receiver -> the branch is done -> return [].
-  if (branch.length === participants.length) {
+  if (parents.length === participants.length) {
     return [];
   }
   // Fetch the santa corresponding the node depth. This is the santa that
   // needs a receiver.
-  const santa = participants[branch.length];
+  const santa = participants[parents.length];
   // Find the potential receivers of this santa. `santaMappings` will contain
   // this santa potential receivers, to which needs to be remove all receivers
   // that have already been assigned.
-  const potentialReceivers = santaMappings[santa].filter(mapping =>
-    branch.every(node => node.receiver !== mapping.receiver),
-  );
+  const potentialReceivers = Object.entries(allSantaMappings[santa])
+    .filter(([receiver]) => parents.every(node => node.receiver !== receiver))
+    // Create the node's children from the potential receivers.
+    .map(([receiver, cost]) => ({
+      santa,
+      cost,
+      receiver,
+    }));
   // If there is no possible receivers even though not all santas have a
-  // receiver this branch isn't working -> return null.
-  if (!potentialReceivers.length) return null;
-  // Create the node's children from the potential receivers.
-  return potentialReceivers.map(m => ({
-    santa,
-    cost: m.count,
-    receiver: m.receiver,
-  }));
+  // receiver, this branch isn't working -> return null.
+  return potentialReceivers.length ? potentialReceivers : null;
 };
 
 /**
@@ -89,11 +121,13 @@ const getTraverseNodeChildren = (participants, santaMappings, branch) => {
  * @return {{}[]} The new attributions
  */
 const generateSantas = (pastChristmas, families) => {
-  const participants = families.reduce((result, family) => [
-    ...result,
-    ...(Array.isArray(family) ? family : [family]),
-  ]);
-  const santaMappingsForAll = Object.assign(
+  const participants = shuffle(
+    families.reduce((result, family) => [
+      ...result,
+      ...(Array.isArray(family) ? family : [family]),
+    ]),
+  );
+  const allSantaMappings = Object.assign(
     ...participants.map(p => {
       const receivers = findPotentialReceivers(families, p);
       return {
@@ -106,10 +140,13 @@ const generateSantas = (pastChristmas, families) => {
   // participant of `participants` where d is the depth of the node.
   const result = traverse({
     // This function must return the children of the last node of `branch`, that
-    // is the possible Santas of the n-th participant with n being the depth
+    // is the possible santas of the n-th participant with n being the depth
     // of the branch.
     getNodeChildren(branch) {
-      return getTraverseNodeChildren(participants, santaMappingsForAll, branch);
+      return getTraverseNodeChildren(participants, allSantaMappings, branch);
+    },
+    getSubBranchOptimalCost(branch) {
+      return getSubBranchOptimalCost(participants, allSantaMappings, branch);
     },
   });
   return {
@@ -117,7 +154,9 @@ const generateSantas = (pastChristmas, families) => {
       ...result.branch.map((node, i) => ({ [participants[i]]: node.receiver })),
     ),
     cost: result.cost,
-    optimal: result.optimal,
+    explored: result.explored,
+    failed: result.failed,
+    trimmed: result.trimmed,
   };
 };
 
@@ -127,4 +166,7 @@ module.exports = {
   getSantaMappings,
   getSantaReceiverMappingCount,
   getTraverseNodeChildren,
+  getRemainingReceivers,
+  getRemainingSantas,
+  getSubBranchOptimalCost,
 };

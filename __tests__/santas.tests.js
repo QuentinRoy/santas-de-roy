@@ -4,14 +4,16 @@ const {
   getSantaReceiverMappingCount,
   getSantaMappings,
   getTraverseNodeChildren,
+  getRemainingReceivers,
+  getRemainingSantas,
+  getSubBranchOptimalCost,
 } = require('../modules/santas');
 
 test('findPotentialReceivers', t => {
-  t.deepEqual(findPotentialReceivers(['louis', 'bob', 'anna', 'lucy'], 'bob'), [
-    'louis',
-    'anna',
-    'lucy',
-  ]);
+  t.deepEqual(
+    findPotentialReceivers(['louis', 'bob', 'anna', 'lucy'], 'bob'), //
+    ['louis', 'anna', 'lucy'],
+  );
 
   t.deepEqual(
     findPotentialReceivers([['louis', 'bob'], 'anna', ['lucy', 'max']], 'bob'),
@@ -41,50 +43,39 @@ test('getSantaMappings', t => {
       ['anna', 'max', 'ying', 'louis'],
       'bob',
     ),
-    [
-      { receiver: 'anna', count: 2 },
-      { receiver: 'max', count: 1 },
-      { receiver: 'ying', count: 0 },
-      { receiver: 'louis', count: 0 },
-    ],
+    {
+      anna: 2,
+      max: 1,
+      ying: 0,
+      louis: 0,
+    },
   );
 });
 
-test('createNodeChildrenGetter', t => {
+test('getTraverseNodeChildren', t => {
   const participants = ['bob', 'anna', 'ying', 'max'];
   const santaMappings = {
-    bob: [
-      { receiver: 'anna', count: 2 },
-      { receiver: 'ying', count: 1 },
-      { receiver: 'max', count: 0 },
-    ],
-    anna: [
-      { receiver: 'bob', count: 0 },
-      { receiver: 'ying', count: 1 },
-      { receiver: 'max', count: 1 },
-    ],
-    ying: [
-      { receiver: 'bob', count: 2 },
-      { receiver: 'anna', count: 0 },
-      { receiver: 'max', count: 1 },
-    ],
-    max: [
-      { receiver: 'bob', count: 0 },
-      { receiver: 'anna', count: 0 },
-      { receiver: 'ying', count: 1 },
-    ],
+    bob: { anna: 2, ying: 1, max: 0 },
+    anna: { bob: 0, ying: 1, max: 1 },
+    ying: { bob: 2, anna: 0, max: 1 },
+    max: { bob: 0, anna: 0, ying: 1 },
   };
 
-  t.deepEqual(getTraverseNodeChildren(participants, santaMappings, []), [
-    { receiver: 'anna', cost: 2, santa: 'bob' },
-    { receiver: 'ying', cost: 1, santa: 'bob' },
-    { receiver: 'max', cost: 0, santa: 'bob' },
-  ]);
+  t.deepEqual(
+    getTraverseNodeChildren(participants, santaMappings, []), //
+    [
+      { receiver: 'anna', cost: 2, santa: 'bob' },
+      { receiver: 'ying', cost: 1, santa: 'bob' },
+      { receiver: 'max', cost: 0, santa: 'bob' },
+    ],
+  );
 
   t.deepEqual(
-    getTraverseNodeChildren(participants, santaMappings, [
-      { receiver: 'anna' },
-    ]),
+    getTraverseNodeChildren(
+      participants, //
+      santaMappings,
+      [{ receiver: 'anna' }],
+    ),
     [
       { receiver: 'bob', cost: 0, santa: 'anna' },
       { receiver: 'ying', cost: 1, santa: 'anna' },
@@ -93,9 +84,11 @@ test('createNodeChildrenGetter', t => {
   );
 
   t.deepEqual(
-    getTraverseNodeChildren(participants, santaMappings, [
-      { receiver: 'ying' },
-    ]),
+    getTraverseNodeChildren(
+      participants, //
+      santaMappings,
+      [{ receiver: 'ying' }],
+    ),
     [
       { receiver: 'bob', cost: 0, santa: 'anna' },
       { receiver: 'max', cost: 1, santa: 'anna' },
@@ -103,10 +96,88 @@ test('createNodeChildrenGetter', t => {
   );
 
   t.deepEqual(
-    getTraverseNodeChildren(participants, santaMappings, [
+    getTraverseNodeChildren(
+      participants, //
+      santaMappings,
+      [{ receiver: 'anna' }, { receiver: 'max' }],
+    ),
+    [{ receiver: 'bob', cost: 2, santa: 'ying' }],
+  );
+});
+
+test('getRemainingReceivers', t => {
+  const participants = ['bob', 'anna', 'ying', 'max'];
+  t.deepEqual(
+    getRemainingReceivers(
+      participants, //
+      [{ receiver: 'ying' }, { receiver: 'max' }],
+    ),
+    ['bob', 'anna'],
+  );
+  t.deepEqual(
+    getRemainingReceivers(participants, []), //
+    ['bob', 'anna', 'ying', 'max'],
+  );
+
+  t.deepEqual(
+    getRemainingReceivers(participants, [
+      { receiver: 'bob' },
+      { receiver: 'anna' },
+      { receiver: 'ying' },
+      { receiver: 'max' },
+    ]),
+    [],
+  );
+});
+
+test('getRemainingSantas', t => {
+  const participants = ['bob', 'anna', 'ying', 'max'];
+  t.deepEqual(
+    getRemainingSantas(participants, [{}, {}]), //
+    ['ying', 'max'],
+  );
+  t.deepEqual(
+    getRemainingSantas(participants, []), //
+    ['bob', 'anna', 'ying', 'max'],
+  );
+
+  t.deepEqual(
+    getRemainingSantas(participants, [{}, {}, {}, {}]), //
+    [],
+  );
+});
+
+test('getSubBranchOptimalCost', t => {
+  const participants = ['bob', 'anna', 'ying', 'max'];
+  const allSantaMappings = {
+    bob: { anna: 2, ying: 1, max: 1 },
+    anna: { bob: 0, ying: 1, max: 1 },
+    ying: { bob: 2, anna: 0 },
+    max: { bob: 1, anna: 0, ying: 2 },
+  };
+  t.deepEqual(
+    getSubBranchOptimalCost(participants, allSantaMappings, [
       { receiver: 'anna' },
       { receiver: 'max' },
     ]),
-    [{ receiver: 'bob', cost: 2, santa: 'ying' }],
+    /* ying: bob only */ 2 + /* max: bob & ying */ 1,
+  );
+  t.deepEqual(
+    getSubBranchOptimalCost(participants, allSantaMappings, [
+      { receiver: 'anna' },
+      { receiver: 'bob' },
+    ]),
+    // ying is blocked.
+    Number.POSITIVE_INFINITY,
+  );
+  t.deepEqual(getSubBranchOptimalCost(participants, allSantaMappings, []), 1);
+  t.deepEqual(
+    getSubBranchOptimalCost(participants, allSantaMappings, [
+      { receiver: 'anna' },
+      { receiver: 'max' },
+      { receiver: 'max' },
+      { receiver: 'ying' },
+    ]),
+    0,
   );
 });

@@ -10,12 +10,12 @@ const families = [
 ];
 
 const start = Date.now();
-Array.from({ length: 3 }).reduce((past, _, i) => {
+Array.from({ length: 15 }).reduce((past, _, i) => {
   const cStart = Date.now();
-  const christmas = generateSantas(past.map(p => p.santas), families);
   console.log('-----------');
   console.log(`Chistmas ${i + 1}`);
   console.log('-----------');
+  const christmas = generateSantas(past.map(p => p.santas), families);
   console.log(yaml.dump(christmas));
   console.log(`duration: ${Date.now() - cStart}ms`);
   console.log(' ');
