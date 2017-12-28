@@ -1,26 +1,36 @@
 const yaml = require('js-yaml');
+const fs = require('fs');
+const { promisify } = require('util');
+const log = require('loglevel');
 const { generateSantas } = require('./modules/santas');
 
+const readFile = promisify(fs.readFile);
+const writeFile = promisify(fs.writeFile);
+log.setDefaultLevel('debug');
+
+const PAST_PATH = 'past.yaml';
+
 const families = [
-  ['Adrien', 'Antoine', 'Maryvone', 'Hugo', 'Noel-gilles'],
+  ['Adrien', 'Antoine', 'Maryvone', 'Hugo', 'Noel-Gilles'],
   ['Louise', 'Sadyo', 'Pierre-Marie', 'Marie-Odile', 'Quentin'],
   ['Valérie', 'Pascal', 'Nathan', 'Marion'],
   ['Christelle', 'Daniel', 'Manon', 'Rémi'],
   ['Thérèse', 'Joseph'],
 ];
 
-const start = Date.now();
-Array.from({ length: 15 }).reduce((past, _, i) => {
-  const cStart = Date.now();
-  console.log('-----------');
-  console.log(`Chistmas ${i + 1}`);
-  console.log('-----------');
-  const christmas = generateSantas(past.map(p => p.santas), families);
-  console.log(yaml.dump(christmas));
-  console.log(`duration: ${Date.now() - cStart}ms`);
-  console.log(' ');
-  return [...past, christmas];
-}, []);
+const main = () =>
+  readFile(PAST_PATH)
+    .then(data => yaml.safeLoad(data), () => [])
+    .then(past => {
+      log.info(`${past.length} past christmases found.`);
+      log.info(`Calculating new christmas...`);
+      const start = Date.now();
+      const christmas = Object.assign(
+        generateSantas(past.map(p => p.santas), families),
+        { duration: Date.now() - start },
+      );
+      process.stdout.write(yaml.safeDump(christmas));
+      return writeFile(PAST_PATH, yaml.safeDump([...past, christmas]));
+    });
 
-console.log('-----------');
-console.log(`total duration: ${Date.now() - start}ms`);
+main().catch(e => log.error(e));

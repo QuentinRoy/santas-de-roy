@@ -3,11 +3,13 @@ const {
   findPotentialReceivers,
   getSantaReceiverMappingCount,
   getSantaMappings,
-  getTraverseNodeChildren,
+  createTraverseNodeChildren,
   getRemainingReceivers,
   getRemainingSantas,
   getSubBranchOptimalCost,
+  memoizeTraverse,
 } = require('../modules/santas');
+const { stub } = require('sinon');
 
 test('findPotentialReceivers', t => {
   t.deepEqual(
@@ -53,16 +55,18 @@ test('getSantaMappings', t => {
 });
 
 test('getTraverseNodeChildren', t => {
-  const participants = ['bob', 'anna', 'ying', 'max'];
-  const santaMappings = {
-    bob: { anna: 2, ying: 1, max: 0 },
-    anna: { bob: 0, ying: 1, max: 1 },
-    ying: { bob: 2, anna: 0, max: 1 },
-    max: { bob: 0, anna: 0, ying: 1 },
-  };
+  const getTraverseNodeChildren = createTraverseNodeChildren(
+    ['bob', 'anna', 'ying', 'max'],
+    {
+      bob: { anna: 2, ying: 1, max: 0 },
+      anna: { bob: 0, ying: 1, max: 1 },
+      ying: { bob: 2, anna: 0, max: 1 },
+      max: { bob: 0, anna: 0, ying: 1 },
+    },
+  );
 
   t.deepEqual(
-    getTraverseNodeChildren(participants, santaMappings, []), //
+    getTraverseNodeChildren([]), //
     [
       { receiver: 'anna', cost: 2, santa: 'bob' },
       { receiver: 'ying', cost: 1, santa: 'bob' },
@@ -70,37 +74,19 @@ test('getTraverseNodeChildren', t => {
     ],
   );
 
-  t.deepEqual(
-    getTraverseNodeChildren(
-      participants, //
-      santaMappings,
-      [{ receiver: 'anna' }],
-    ),
-    [
-      { receiver: 'bob', cost: 0, santa: 'anna' },
-      { receiver: 'ying', cost: 1, santa: 'anna' },
-      { receiver: 'max', cost: 1, santa: 'anna' },
-    ],
-  );
+  t.deepEqual(getTraverseNodeChildren([{ receiver: 'anna' }]), [
+    { receiver: 'bob', cost: 0, santa: 'anna' },
+    { receiver: 'ying', cost: 1, santa: 'anna' },
+    { receiver: 'max', cost: 1, santa: 'anna' },
+  ]);
+
+  t.deepEqual(getTraverseNodeChildren([{ receiver: 'ying' }]), [
+    { receiver: 'bob', cost: 0, santa: 'anna' },
+    { receiver: 'max', cost: 1, santa: 'anna' },
+  ]);
 
   t.deepEqual(
-    getTraverseNodeChildren(
-      participants, //
-      santaMappings,
-      [{ receiver: 'ying' }],
-    ),
-    [
-      { receiver: 'bob', cost: 0, santa: 'anna' },
-      { receiver: 'max', cost: 1, santa: 'anna' },
-    ],
-  );
-
-  t.deepEqual(
-    getTraverseNodeChildren(
-      participants, //
-      santaMappings,
-      [{ receiver: 'anna' }, { receiver: 'max' }],
-    ),
+    getTraverseNodeChildren([{ receiver: 'anna' }, { receiver: 'max' }]),
     [{ receiver: 'bob', cost: 2, santa: 'ying' }],
   );
 });
@@ -180,4 +166,21 @@ test('getSubBranchOptimalCost', t => {
     ]),
     0,
   );
+});
+
+test('memoizeTraverse', t => {
+  // prettier-ignore
+  const traverse = stub()
+    .onCall(0).returns(0)
+    .onCall(1).returns(1)
+    .onCall(2).returns(2);
+  const memoized = memoizeTraverse(traverse);
+  t.is(memoized(['a', 'b', 'c']), 0);
+  t.is(memoized(['a', 'b', 'c']), 0);
+  t.is(memoized(['b', 'c', 'a']), 0);
+  t.is(memoized(['c', 'a']), 1);
+  t.is(memoized(['c', 'a', 'b']), 0);
+  t.is(memoized([]), 2);
+  t.is(memoized(['a', 'c']), 1);
+  t.true(traverse.calledThrice);
 });

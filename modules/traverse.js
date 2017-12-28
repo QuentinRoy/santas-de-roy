@@ -1,9 +1,9 @@
 const sortBy = require('lodash/sortBy');
-const shuffle = require('lodash/shuffle');
 
 const TRAVERSE_DEFAULT_CONFIG = {
   parents: [],
   getSubBranchOptimalCost: () => 0,
+  maxCost: Number.POSITIVE_INFINITY,
 };
 
 /**
@@ -30,11 +30,12 @@ const TRAVERSE_DEFAULT_CONFIG = {
  * @return {Node[]} The selected branch.
  */
 const traverse = config => {
-  const { parents, getNodeChildren, getSubBranchOptimalCost } = Object.assign(
-    {},
-    TRAVERSE_DEFAULT_CONFIG,
-    config,
-  );
+  const {
+    parents,
+    getNodeChildren,
+    getSubBranchOptimalCost,
+    maxCost,
+  } = Object.assign({}, TRAVERSE_DEFAULT_CONFIG, config);
   const children = getNodeChildren(parents);
   // Failed branch.
   if (children == null) {
@@ -54,15 +55,19 @@ const traverse = config => {
   // Calculate the best (lowest) possible cost of a sub-branch so that we can
   // stop once we found one.
   const optimalCost = getSubBranchOptimalCost(parents);
+  if (optimalCost > maxCost || optimalCost === Number.POSITIVE_INFINITY) {
+    return null;
+  }
   // Look up sub-branches.
-  return sortBy(shuffle(children), 'cost').reduce(
+  return sortBy(children, 'cost').reduce(
     (current, child) => {
-      if (current.cost <= optimalCost)
+      if (current.cost <= optimalCost || child.cost > current.maxCost)
         return Object.assign(current, { trimmed: current.trimmed + 1 });
       const sub = traverse({
         parents: [...parents, child],
         getNodeChildren,
         getSubBranchOptimalCost,
+        maxCost: current.maxCost - child.cost,
       });
       return sub && (!current || current.cost > sub.cost)
         ? {
@@ -70,15 +75,14 @@ const traverse = config => {
             // Allows arbitrary type of child, takes into account the cost if
             // available.
             cost: sub.cost + ((child != null && child.cost) || 0),
+            maxCost: sub.cost,
             depth: sub.depth + 1,
             explored: current.explored + sub.explored,
             failed: current.failed + sub.failed,
             trimmed: current.trimmed + sub.trimmed,
           }
         : Object.assign({}, current, {
-            explored: sub
-              ? current.explored + sub.explored
-              : current.explored + 1,
+            explored: sub ? current.explored + sub.explored : current.explored,
             failed: sub ? current.failed + sub.failed : current.failed + 1,
             trimmed: sub ? current.trimmed + sub.trimmed : current.trimmed,
           });
@@ -88,6 +92,7 @@ const traverse = config => {
       explored: 0,
       failed: 0,
       trimmed: 0,
+      maxCost,
     },
   );
 };

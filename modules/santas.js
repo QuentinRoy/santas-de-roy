@@ -1,5 +1,6 @@
 const traverse = require('./traverse');
 const shuffle = require('lodash/shuffle');
+const sortBy = require('lodash/sortBy');
 
 /**
  * @param {{}[]} pastChristmas An array containing the previous Santa
@@ -79,7 +80,10 @@ const getSubBranchOptimalCost = (
   }, 0);
 };
 
-const getTraverseNodeChildren = (participants, allSantaMappings, parents) => {
+const createTraverseNodeChildren = (
+  participants,
+  allSantaMappings,
+) => parents => {
   // Case all santas have a receiver -> the branch is done -> return [].
   if (parents.length === participants.length) {
     return [];
@@ -103,6 +107,18 @@ const getTraverseNodeChildren = (participants, allSantaMappings, parents) => {
   return potentialReceivers.length ? potentialReceivers : null;
 };
 
+const memoizeTraverse = f => {
+  const cache = new Map();
+  return branch => {
+    const hash = sortBy(branch.map(n => n.receiver)).join('%');
+    const cached = cache.get(hash);
+    if (cached != null) return cached;
+    const result = f(branch);
+    cache.set(hash, result);
+    return result;
+  };
+};
+
 /**
  * Generate a new secret Santa attributions based on past attributions and
  * available participants.
@@ -121,14 +137,12 @@ const getTraverseNodeChildren = (participants, allSantaMappings, parents) => {
  * @return {{}[]} The new attributions
  */
 const generateSantas = (pastChristmas, families) => {
-  const participants = shuffle(
-    families.reduce((result, family) => [
-      ...result,
-      ...(Array.isArray(family) ? family : [family]),
-    ]),
-  );
+  const participants = families.reduce((result, family) => [
+    ...result,
+    ...(Array.isArray(family) ? family : [family]),
+  ]);
   const allSantaMappings = Object.assign(
-    ...participants.map(p => {
+    ...shuffle(participants).map(p => {
       const receivers = findPotentialReceivers(families, p);
       return {
         [p]: getSantaMappings(pastChristmas, receivers, p),
@@ -142,9 +156,9 @@ const generateSantas = (pastChristmas, families) => {
     // This function must return the children of the last node of `branch`, that
     // is the possible santas of the n-th participant with n being the depth
     // of the branch.
-    getNodeChildren(branch) {
-      return getTraverseNodeChildren(participants, allSantaMappings, branch);
-    },
+    getNodeChildren: memoizeTraverse(
+      createTraverseNodeChildren(participants, allSantaMappings),
+    ),
     getSubBranchOptimalCost(branch) {
       return getSubBranchOptimalCost(participants, allSantaMappings, branch);
     },
@@ -175,8 +189,9 @@ module.exports = {
   generateSantas,
   getSantaMappings,
   getSantaReceiverMappingCount,
-  getTraverseNodeChildren,
+  createTraverseNodeChildren,
   getRemainingReceivers,
   getRemainingSantas,
   getSubBranchOptimalCost,
+  memoizeTraverse,
 };
