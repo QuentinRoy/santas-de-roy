@@ -1,5 +1,4 @@
 const traverse = require('./traverse');
-const shuffle = require('lodash/shuffle');
 const sortBy = require('lodash/sortBy');
 
 /**
@@ -142,7 +141,7 @@ const generateSantas = (pastChristmas, families) => {
     ...(Array.isArray(family) ? family : [family]),
   ]);
   const allSantaMappings = Object.assign(
-    ...shuffle(participants).map(p => {
+    ...participants.map(p => {
       const receivers = findPotentialReceivers(families, p);
       return {
         [p]: getSantaMappings(pastChristmas, receivers, p),
