@@ -118,6 +118,27 @@ const memoizeTraverse = f => {
   };
 };
 
+const getSantaMinReceiverCount = santaMappings =>
+  Object.values(santaMappings).reduce(
+    (result, val) => {
+      if (val > result.min) return result;
+      return {
+        min: val,
+        count: val === result.min ? result.count + 1 : 1,
+      };
+    },
+    { min: Number.POSITIVE_INFINITY, count: 0 },
+  ).count;
+
+const sortSantasPerMinReceiverCount = allSantaMappings =>
+  sortBy(
+    Object.entries(allSantaMappings).map(([santa, mapping]) => ({
+      santa,
+      minRecCount: getSantaMinReceiverCount(mapping),
+    })),
+    'minRecCount',
+  ).map(e => e.santa);
+
 /**
  * Generate a new secret Santa attributions based on past attributions and
  * available participants.
@@ -136,24 +157,30 @@ const memoizeTraverse = f => {
  * @return {{}[]} The new attributions
  */
 const generateSantas = (pastChristmas, families) => {
-  const participants = families.reduce((result, family) => [
-    ...result,
-    ...(Array.isArray(family) ? family : [family]),
-  ]);
   const allSantaMappings = Object.assign(
-    ...participants.map(p => {
-      const receivers = findPotentialReceivers(families, p);
-      return {
-        [p]: getSantaMappings(pastChristmas, receivers, p),
-      };
-    }),
+    ...families
+      // Flatten the families to get all participants.
+      .reduce((result, family) => [
+        ...result,
+        ...(Array.isArray(family) ? family : [family]),
+      ])
+      // Create the santa mappings.
+      .map(p => {
+        const receivers = findPotentialReceivers(families, p);
+        return {
+          [p]: getSantaMappings(pastChristmas, receivers, p),
+        };
+      }),
   );
+  // Get the sorted participant list.
+  const participants = sortSantasPerMinReceiverCount(allSantaMappings);
+
   // `traverse` explores an unknown tree to find an acceptable branch.
-  // The value of each node will be a Santa whose recipient is the d-th
+  // The value of each node will be a receiver whose santa is the d-th
   // participant of `participants` where d is the depth of the node.
   const result = traverse({
     // This function must return the children of the last node of `branch`, that
-    // is the possible santas of the n-th participant with n being the depth
+    // is the possible receivers of the n-th participant with n being the depth
     // of the branch.
     getNodeChildren: memoizeTraverse(
       createTraverseNodeChildren(participants, allSantaMappings),
@@ -193,4 +220,6 @@ module.exports = {
   getRemainingSantas,
   getSubBranchOptimalCost,
   memoizeTraverse,
+  getSantaMinReceiverCount,
+  sortSantasPerMinReceiverCount,
 };

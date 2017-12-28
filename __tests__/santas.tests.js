@@ -8,6 +8,8 @@ const {
   getRemainingSantas,
   getSubBranchOptimalCost,
   memoizeTraverse,
+  getSantaMinReceiverCount,
+  sortSantasPerMinReceiverCount,
 } = require('../modules/santas');
 const { stub } = require('sinon');
 
@@ -183,4 +185,54 @@ test('memoizeTraverse', t => {
   t.is(memoized([]), 2);
   t.is(memoized(['a', 'c']), 1);
   t.true(traverse.calledThrice);
+});
+
+test('getSantaMinReceiverCount', t => {
+  t.deepEqual(
+    getSantaMinReceiverCount({
+      max: 1,
+      anna: 2,
+      lucy: 3,
+      bob: 1,
+      ying: 2,
+      jo: 2,
+    }),
+    2,
+  );
+});
+
+test('sortSantasPerMinReceiverCount', t => {
+  t.deepEqual(
+    sortSantasPerMinReceiverCount({
+      jo: {
+        max: 1,
+        anna: 2,
+        lucy: 3,
+        bob: 1,
+        ying: 2,
+      },
+      max: {
+        jo: 2,
+        anna: 2,
+        lucy: 3,
+        bob: 1,
+        ying: 2,
+      },
+      anna: {
+        max: 1,
+        jo: 1,
+        lucy: 2,
+        bob: 1,
+        ying: 2,
+      },
+      lucy: {
+        max: 1,
+        anna: 1,
+        jo: 2,
+        bob: 1,
+        ying: 2,
+      },
+    }),
+    ['max', 'jo', 'anna', 'lucy'],
+  );
 });
