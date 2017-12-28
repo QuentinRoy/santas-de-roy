@@ -109,6 +109,7 @@ const createTraverseNodeChildren = (
 const memoizeTraverse = f => {
   const cache = new Map();
   return branch => {
+    if (branch.length > 5) return f(branch);
     const hash = sortBy(branch.map(n => n.receiver)).join('%');
     const cached = cache.get(hash);
     if (cached != null) return cached;
