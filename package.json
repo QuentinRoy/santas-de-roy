@@ -35,6 +35,8 @@
     }
   },
   "dependencies": {
+    "commander": "^2.14.1",
+    "dateformat": "^3.0.3",
     "deepmerge": "^2.0.1",
     "js-yaml": "^3.10.0",
     "lodash": "^4.17.5",

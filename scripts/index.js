@@ -50,6 +50,7 @@ const generateSantas = (participants, pastChristmases, blackLists) => {
       );
     });
   });
+
   // Use the Munkres algorithm to get the assignation. Because the cost of an
   // an assignation is the number of times this assignation already happened,
   // Munkres will minimize the number of re-assignation.
@@ -82,7 +83,7 @@ const generateSantas = (participants, pastChristmases, blackLists) => {
  * @param {string[]} [options.participants] The list of all participants.
  * If omitted, then the participants appearing in exclusionGroups and
  * as a blackLists key will be used.
- * @param {Object.<string,string>[]} [options.pastChristmases] An array
+ * @param {Object.<string,string>[]} [options.history] An array
  * containing the previous attributions (dictionnaries whose keys are the
  * santas, and values their receiver).
  * @param {Object.<string,string[]>} [options.blackLists] A dictionary whose
@@ -98,30 +99,32 @@ const generateSantas = (participants, pastChristmases, blackLists) => {
 module.exports = options => {
   // Parse the options.
   const {
-    pastChristmases = [],
+    history = [],
     blackLists: initBlackList = {},
     exclusionGroups = [],
     participants = [
-      ...exclusionGroups.reduce((all, g) => [...all, ...g]),
+      ...exclusionGroups.reduce((all, g) => [...all, ...g], []),
       ...Object.keys(initBlackList),
     ],
-    randomize = true,
+    random = true,
   } = Array.isArray(options) ? { participants: options } : options;
+
+  if (!participants || participants.length <= 0) {
+    throw new Error('No participants specified.');
+  }
 
   const blackLists = deepMerge(
     exclusionGroupsToBlackLists(exclusionGroups),
     initBlackList,
   );
 
-  const randomizedParticipants = randomize
-    ? shuffle(participants)
-    : participants;
+  const randomizedParticipants = random ? shuffle(participants) : participants;
   const assignations = generateSantas(
     randomizedParticipants,
-    pastChristmases,
+    history,
     blackLists,
   );
-  if (!randomize) return assignations;
+  if (!random) return assignations;
   // If the participants have been randomized, re-sort them.
   return participants.reduce(
     (obj, p) => Object.assign({}, obj, { [p]: assignations[p] }),
