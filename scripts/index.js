@@ -112,7 +112,10 @@ module.exports = options => {
       ...Object.keys(initBlackList),
     ]),
     random = true,
-  } = Array.isArray(options) ? { participants: options } : options;
+  } =
+    Array.isArray(options) || options == null
+      ? { participants: options }
+      : options;
 
   if (!participants || participants.length <= 0) {
     throw new Error('No participants specified.');
