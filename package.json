@@ -31,18 +31,13 @@
     "generate-santas": "node ./bin/cli.js",
     "postrewrite": "npm run git-hook",
     "precommit": "npm run git-hook",
-    "commitmsg": "commitlint -e",
-    "lint": "eslint 'packages/**/src/**/*.@(js|jsx)'",
+    "commitmsg": "commitlint -e $GIT_PARAMS",
+    "lint": "eslint scripts/**/*.js",
     "git-hook": "npm run lint",
     "test": "jest",
     "test-cov": "jest --coverage --collectCoverageFrom=scripts/**/*.js"
   },
   "private": true,
-  "config": {
-    "commitizen": {
-      "path": "@commitlint/prompt"
-    }
-  },
   "dependencies": {
     "commander": "^2.14.1",
     "dateformat": "^3.0.3",
