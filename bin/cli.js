@@ -183,9 +183,8 @@ const main = async () => {
     } else {
       await writeFile(dataPath, yaml.safeDump(data));
     }
+    log.info(`New data written in ${dataPath}.`);
   }
-
-  log.info(`New data written in ${dataPath}.`);
 };
 
 main()
