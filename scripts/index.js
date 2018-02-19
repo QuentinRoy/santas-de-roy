@@ -43,7 +43,10 @@ const santasDeRoy = options => {
       ...Object.keys(initBlackList),
     ]),
     random = true,
-  } = Array.isArray(options) ? { participants: options } : options;
+  } =
+    Array.isArray(options) || options == null
+      ? { participants: options }
+      : options;
 
   // Check if there is participants.
   if (!participants || participants.length <= 0) {
