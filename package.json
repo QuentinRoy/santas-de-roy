@@ -1,6 +1,6 @@
 {
   "name": "santas-de-roy",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "bin": {
     "santas-de-roy": "./bin/cli.js"
   },
@@ -40,7 +40,10 @@
     "release": "standard-version"
   },
   "jest": {
-    "collectCoverageFrom":["scripts/**/*.js", "bin/**/*.js"]
+    "collectCoverageFrom": [
+      "scripts/**/*.js",
+      "bin/**/*.js"
+    ]
   },
   "dependencies": {
     "commander": "^2.14.1",

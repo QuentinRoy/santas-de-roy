@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="0.1.1"></a>
+## [0.1.1](https://github.com/QuentinRoy/santa-des-roy/compare/v0.1.0...v0.1.1) (2018-02-19)
+
+
+### Bug Fixes
+
+* fix non working config file options ([1ce1f6e](https://github.com/QuentinRoy/santa-des-roy/commit/1ce1f6e)), closes [#3](https://github.com/QuentinRoy/santa-des-roy/issues/3)
+
+
+
 <a name="0.1.0"></a>
 # 0.1.0 (2018-02-19)
 
