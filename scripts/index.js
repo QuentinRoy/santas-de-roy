@@ -1,6 +1,7 @@
 const shuffle = require('lodash/shuffle');
 const munkres = require('munkres-js');
 const deepMerge = require('deepmerge');
+const uniq = require('array-uniq');
 
 /**
  * Create blacklists from exclusion groups: a participant cannot be the santa of
@@ -16,7 +17,11 @@ const exclusionGroupsToBlackLists = exclusionGroups =>
       Object.assign(
         {},
         res,
-        group.reduce((fRes, p) => Object.assign({}, fRes, { [p]: group }), {}),
+        group.reduce(
+          (fRes, p) =>
+            Object.assign({}, fRes, { [p]: [...group, ...(res[p] || [])] }),
+          {},
+        ),
       ),
     {},
   );
@@ -102,10 +107,10 @@ module.exports = options => {
     history = [],
     blackLists: initBlackList = {},
     exclusionGroups = [],
-    participants = [
+    participants = uniq([
       ...exclusionGroups.reduce((all, g) => [...all, ...g], []),
       ...Object.keys(initBlackList),
-    ],
+    ]),
     random = true,
   } = Array.isArray(options) ? { participants: options } : options;
 
