@@ -25,7 +25,8 @@
     "eslint-plugin-prettier": "^2.4.0",
     "husky": "^0.14.3",
     "jest": "^22.3.0",
-    "prettier": "^1.9.2"
+    "prettier": "^1.9.2",
+    "standard-version": "^4.3.0"
   },
   "scripts": {
     "generate-santas": "node ./bin/cli.js",
@@ -35,7 +36,8 @@
     "lint": "eslint scripts/**/*.js",
     "git-hook": "npm run lint",
     "test": "jest",
-    "test-cov": "jest --coverage --collectCoverageFrom=scripts/**/*.js"
+    "test-cov": "jest --coverage --collectCoverageFrom=scripts/**/*.js",
+    "release": "standard-version"
   },
   "private": true,
   "dependencies": {
