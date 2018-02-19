@@ -39,7 +39,6 @@
     "test-cov": "jest --coverage --collectCoverageFrom=scripts/**/*.js",
     "release": "standard-version"
   },
-  "private": true,
   "dependencies": {
     "commander": "^2.14.1",
     "dateformat": "^3.0.3",
