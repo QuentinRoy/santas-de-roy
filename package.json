@@ -41,6 +41,7 @@
     }
   },
   "dependencies": {
+    "array-uniq": "^1.0.3",
     "commander": "^2.14.1",
     "dateformat": "^3.0.3",
     "deepmerge": "^2.0.1",
