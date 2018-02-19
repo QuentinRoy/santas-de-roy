@@ -1,7 +1,9 @@
 const yaml = require('js-yaml');
 const fs = require('fs');
+const path = require('path');
 const log = require('loglevel');
 const { promisify } = require('util');
+const pickBy = require('lodash/pickBy');
 const generateSantas = require('../scripts');
 const { version } = require('../package.json');
 const program = require('commander');
@@ -79,7 +81,7 @@ const CLI_OPTIONS = [
   'logLevel',
 ];
 const CONFIG_FILE_OPTIONS = [
-  ...CLI_OPTIONS.filter(o => o !== 'data' && o !== 'logLevel'),
+  ...CLI_OPTIONS.filter(o => o !== 'logLevel'),
   'exclusionGroups',
   'blackLists',
   'participants',
@@ -98,14 +100,22 @@ const getConfigFromConfigFile = async configPath => {
         `Unknown options found in config file ${configPath}: ${k}`,
       );
   });
+  if (config.data) {
+    config.data = path.resolve(path.dirname(configPath), config.data);
+  }
   return config;
 };
 
-const getConfigFromCLIArguments = () => ({
-  ...program.opts(),
-  participants:
-    program.args && program.args.length > 0 ? program.args : undefined,
-});
+const getConfigFromCLIArguments = () =>
+  Object.assign(
+    {},
+    pickBy(program.opts(), val => val !== undefined),
+    program.args && program.args.length > 0
+      ? {
+          participants: program.args,
+        }
+      : undefined,
+  );
 
 const doesIdExistInHistory = (id, history) => history.some(c => c.id === id);
 

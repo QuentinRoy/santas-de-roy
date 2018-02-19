@@ -36,8 +36,11 @@
     "lint": "eslint scripts/**/*.js",
     "git-hook": "npm run lint",
     "test": "jest",
-    "test-cov": "jest --coverage --collectCoverageFrom=scripts/**/*.js",
+    "test-cov": "jest --coverage",
     "release": "standard-version"
+  },
+  "jest": {
+    "collectCoverageFrom":["scripts/**/*.js", "bin/**/*.js"]
   },
   "dependencies": {
     "commander": "^2.14.1",
