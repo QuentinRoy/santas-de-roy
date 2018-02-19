@@ -136,12 +136,6 @@ const main = async () => {
     participants,
   } = { ...config, ...cliConfig };
 
-  if (!dataPath && !dryRun) {
-    log.warn(
-      'Warning: file to read history and write the results is not provided. Use -d to provide a data path or --dry-run to disable this warning and run in dry-run mode.',
-    );
-  }
-
   // Load the history (if available).
   const history = (dataPath && (await loadDataFile(dataPath))) || [];
 
