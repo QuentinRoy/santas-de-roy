@@ -1,10 +1,16 @@
 {
-  "name": "santa-des-roy",
+  "name": "santas-de-roy",
   "version": "0.1.0",
   "bin": {
-    "generate-santas": "./bin/cli.js"
+    "santas-de-roy": "./bin/cli.js"
   },
-  "description": "Automatically manages gift attributions for our secret Santa",
+  "description": "A secret santa API and CLI that takes into account past iterations to avoid re-assignations as much as possible.",
+  "keywords": [
+    "santa",
+    "secret-santa",
+    "assignment",
+    "history"
+  ],
   "main": "index.js",
   "repository": "git@github.com:QuentinRoy/santa-des-roy.git",
   "author": "Quentin Roy <quentin@quentinroy.fr>",
