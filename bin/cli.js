@@ -139,10 +139,12 @@ const main = async () => {
   // Load the history (if available).
   const history = (dataPath && (await loadDataFile(dataPath))) || [];
 
-  if (ignoreHistory) {
-    log.info(`${history.length} past christmases will be ignored.`);
-  } else {
-    log.info(`${history.length} past christmases found.`);
+  if (dataPath) {
+    if (ignoreHistory) {
+      log.info(`${history.length} past christmases will be ignored.`);
+    } else {
+      log.info(`${history.length} past christmases found.`);
+    }
   }
 
   // Avoid id duplications in the data file.
