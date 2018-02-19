@@ -1,6 +1,8 @@
 const munkres = require('munkres-js');
 const shuffle = require('lodash/shuffle');
 
+module.exports.MAX_COST = Number.POSITIVE_INFINITY;
+
 /**
  * Create the matrix of costs for Munkres. Columns are santas and rows
  * are receivers. Cells are the cost of assigning the corresponding santa to
@@ -21,7 +23,7 @@ module.exports.createCostMatrix = (participants, pastChristmases, blackLists) =>
     const santaBlackList = blackLists[santa] || [];
     return participants.map(receiver => {
       if (receiver === santa || santaBlackList.includes(receiver)) {
-        return Number.POSITIVE_INFINITY;
+        return module.exports.MAX_COST;
       }
       return pastChristmases.reduce(
         (count, assignations) =>

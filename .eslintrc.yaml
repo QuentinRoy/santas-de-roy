@@ -12,6 +12,9 @@ rules:
 overrides:
   - files:
       - "**/__tests__/**"
+      - "**/*.test.js"
+    env:
+      jest: true
     rules:
       import/no-extraneous-dependencies:
         - error
