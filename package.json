@@ -37,7 +37,7 @@
     "precommit": "npm run git-hook",
     "commitmsg": "commitlint -e $GIT_PARAMS",
     "lint": "eslint scripts/**/*.js",
-    "git-hook": "npm run lint",
+    "git-hook": "npm run lint && npm test && ./bin/santas-de-roy.js p1 p2 p3",
     "test": "jest",
     "test-cov": "jest --coverage",
     "release": "standard-version"
