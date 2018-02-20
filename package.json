@@ -2,7 +2,7 @@
   "name": "santas-de-roy",
   "version": "0.1.1",
   "bin": {
-    "santas-de-roy": "./bin/cli.js"
+    "santas-de-roy": "./bin/santas-de-roy.js"
   },
   "description": "A secret santa API and CLI that takes into account past iterations to avoid re-assignations as much as possible.",
   "engines": {
@@ -32,7 +32,7 @@
     "standard-version": "^4.3.0"
   },
   "scripts": {
-    "generate-santas": "./bin/cli.js",
+    "generate-santas": "./bin/santas-de-roy.js",
     "postrewrite": "npm run git-hook",
     "precommit": "npm run git-hook",
     "commitmsg": "commitlint -e $GIT_PARAMS",
