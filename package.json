@@ -29,7 +29,7 @@
     "standard-version": "^4.3.0"
   },
   "scripts": {
-    "generate-santas": "node ./bin/cli.js",
+    "generate-santas": "./bin/cli.js",
     "postrewrite": "npm run git-hook",
     "precommit": "npm run git-hook",
     "commitmsg": "commitlint -e $GIT_PARAMS",
