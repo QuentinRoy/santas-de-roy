@@ -5,6 +5,9 @@
     "santas-de-roy": "./bin/cli.js"
   },
   "description": "A secret santa API and CLI that takes into account past iterations to avoid re-assignations as much as possible.",
+  "engines": {
+    "node": ">=8"
+  },
   "keywords": [
     "santa",
     "secret-santa",
