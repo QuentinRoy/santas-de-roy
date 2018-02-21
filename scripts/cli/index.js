@@ -1,19 +1,12 @@
 const yaml = require('js-yaml');
-const fs = require('fs');
 const log = require('loglevel');
-const { promisify } = require('util');
 const generateSantas = require('../lib');
 const dateFormat = require('dateformat');
-const { getDataType, loadDataFile } = require('./utils');
+const { loadDataFile, writeDataFile } = require('./utils');
 const {
   getConfigFromCLIArguments,
   getConfigFromConfigFile,
 } = require('./config');
-
-const writeFile = promisify(fs.writeFile);
-
-module.exports.doesIdExistInHistory = (id, history) =>
-  history.some(c => c.id === id);
 
 module.exports.doMain = async () => {
   const cliConfig = getConfigFromCLIArguments(process.argv);
@@ -54,7 +47,7 @@ module.exports.doMain = async () => {
   }
 
   // Avoid id duplications in the data file.
-  if (id != null && module.exports.doesIdExistInHistory(id, history)) {
+  if (id != null && history.some(c => c.id === id)) {
     throw new Error(`Identifier "${id}" already exists in data file.`);
   }
 
@@ -80,11 +73,7 @@ module.exports.doMain = async () => {
         date: dateFormat(new Date(), 'isoDateTime'),
       },
     ];
-    if (getDataType(dataPath) === 'json') {
-      await writeFile(dataPath, JSON.stringify(data, null, 2));
-    } else {
-      await writeFile(dataPath, yaml.safeDump(data));
-    }
+    await writeDataFile(dataPath, data);
     log.info(`New data written in ${dataPath}.`);
   }
 };
