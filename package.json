@@ -9,7 +9,8 @@
     "node": ">=8"
   },
   "files": [
-    "scripts"
+    "scripts",
+    "bin"
   ],
   "keywords": [
     "santa",
