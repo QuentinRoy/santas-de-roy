@@ -1,6 +1,6 @@
 {
   "name": "santas-de-roy",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "bin": {
     "santas-de-roy": "./bin/santas-de-roy.js"
   },
