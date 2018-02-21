@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="0.1.4"></a>
+## [0.1.4](https://github.com/QuentinRoy/santa-des-roy/compare/v0.1.3...v0.1.4) (2018-02-21)
+
+
+### Bug Fixes
+
+* fix package.json main ([8ed4f34](https://github.com/QuentinRoy/santa-des-roy/commit/8ed4f34))
+* fix published executable ([8b426ca](https://github.com/QuentinRoy/santa-des-roy/commit/8b426ca))
+
+
+
 <a name="0.1.3"></a>
 ## [0.1.3](https://github.com/QuentinRoy/santa-des-roy/compare/v0.1.2...v0.1.3) (2018-02-21)
 
