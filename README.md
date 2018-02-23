@@ -1,4 +1,6 @@
 # Santas-De-Roy
+
+[![Greenkeeper badge](https://badges.greenkeeper.io/QuentinRoy/santas-de-roy.svg)](https://greenkeeper.io/)
 [![NPM](https://img.shields.io/npm/v/santas-de-roy.svg)](https://www.npmjs.com/package/santas-de-roy)
 [![Build Status](https://travis-ci.org/QuentinRoy/santas-de-roy.svg?branch=master)](https://travis-ci.org/QuentinRoy/santas-de-roy)
 [![codecov](https://img.shields.io/codecov/c/github/QuentinRoy/santas-de-roy/master.svg?style=flat)](https://codecov.io/gh/QuentinRoy/santas-de-roy)
