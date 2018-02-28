@@ -47,10 +47,10 @@ module.exports.getConfigFromCLIArguments = argv => {
     .description(
       'An application to assign secret santas, optionally taking history into account.',
     )
-    .option('-c, --config [path]', 'set config path (json or yaml)')
+    .option('-c, --config [path]', 'set the config path (JSON or YAML)')
     .option(
       '-d, --data [path]',
-      'set the history path (to be loaded and written, json or yaml)',
+      'set the history path (to be loaded and written, JSON or YAML)',
     )
     .option('-d, --dry-run', 'do not write in the history file')
     .option(
