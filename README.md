@@ -51,7 +51,7 @@ That's randomized by default, so if you run it again there is fair chance that n
 
 ### History
 
-But here comes the interesting part. If you provide a data path (YAML or JSON), it will be used to save the results. And next time, will be re-used to *ensure* that nobody will get the same santa next time.
+But here comes the interesting part. If you provide a data path (YAML or JSON), it will be used to save the results. And next time, will be re-used to *ensure* that nobody will get the same santa twice (as much as possible).
 
 ```
 > santas-de-roy --data history.yaml Tintin Snowy Haddock Dupond Dupont
@@ -90,7 +90,7 @@ blackLists:
     - Dupont
 
 # Exclusion groups are another way of defining blacklists. Participants
-# part of the same exclusions groups cannot be the santa of each others.
+# part of the same exclusion group cannot be the santa of each others.
 exclusionGroups:
   - - Dupond
     - Dupont
@@ -124,8 +124,8 @@ An application to assign secret santas, optionally taking history into account.
 Options:
 
   -V, --version        output the version number
-  -c, --config [path]  set config path (json or yaml)
-  -d, --data <path>    set the history path (to be loaded and written, json or yaml)
+  -c, --config [path]  set the config path (JSON or YAML)
+  -d, --data [path]    set the history path (to be loaded and written, JSON or YAML)
   -d, --dry-run        do not write in the history file
   --ignore-history     ignore the history when computing the new assignations
   --log-level [level]  set the log level
