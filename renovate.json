@@ -1,5 +1,11 @@
 {
   "extends": [
-    "config:base"
+    "schedule:weekends",
+    "config:js-lib",
+    ":automergeMinor",
+    ":automergeBranchPush",
+    ":semanticCommits",
+    ":rebaseStalePrs",
+    ":semanticCommitScopeDisabled"
   ]
 }
