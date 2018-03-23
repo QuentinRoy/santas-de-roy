@@ -5,7 +5,7 @@
 [![codecov](https://img.shields.io/codecov/c/github/QuentinRoy/santas-de-roy/master.svg?style=flat)](https://codecov.io/gh/QuentinRoy/santas-de-roy)
 [![dependencies Status](https://david-dm.org/QuentinRoy/santas-de-roy/status.svg)](https://david-dm.org/QuentinRoy/santas-de-roy)
 [![devDependencies Status](https://david-dm.org/QuentinRoy/santas-de-roy/dev-status.svg)](https://david-dm.org/QuentinRoy/santas-de-roy?type=dev)
-[![Greenkeeper badge](https://badges.greenkeeper.io/QuentinRoy/santas-de-roy.svg)](https://greenkeeper.io/)
+[![renovate badge](https://img.shields.io/badge/renovate-enabled-brightgreen.svg)](https://renovateapp.com/)
 
 A secret Santa API and CLI that takes into account past iterations to avoid re-assignations as much as possible.
 
