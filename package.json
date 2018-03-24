@@ -24,17 +24,17 @@
   "author": "Quentin Roy <quentin@quentinroy.fr>",
   "license": "MIT",
   "devDependencies": {
-    "@commitlint/cli": "^6.1.0",
-    "@commitlint/config-conventional": "^6.1.0",
-    "eslint": "^4.18.1",
-    "eslint-config-airbnb-base": "^12.1.0",
-    "eslint-config-prettier": "^2.9.0",
-    "eslint-plugin-import": "^2.8.0",
-    "eslint-plugin-prettier": "^2.4.0",
-    "husky": "^0.14.3",
-    "jest": "^22.4.0",
-    "prettier": "^1.9.2",
-    "standard-version": "^4.3.0"
+    "@commitlint/cli": "6.1.0",
+    "@commitlint/config-conventional": "6.1.0",
+    "eslint": "4.18.1",
+    "eslint-config-airbnb-base": "12.1.0",
+    "eslint-config-prettier": "2.9.0",
+    "eslint-plugin-import": "2.8.0",
+    "eslint-plugin-prettier": "2.6.0",
+    "husky": "0.14.3",
+    "jest": "22.4.0",
+    "prettier": "1.10.2",
+    "standard-version": "4.3.0"
   },
   "scripts": {
     "generate-santas": "./bin/santas-de-roy.js",
