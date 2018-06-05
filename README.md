@@ -98,7 +98,7 @@ exclusionGroups:
 # Set up the path toward the history file.
 data: history.yaml
 
-# Set up an id for this particular santa assignations. Id's must be unic in the
+# Set up an id for this particular santa assignations. Ids must be unique in the
 # history.
 id: chistmas2018
 
