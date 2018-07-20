@@ -1,7 +1,7 @@
 const yaml = require('js-yaml');
 const log = require('loglevel');
-const generateSantas = require('../lib');
 const dateFormat = require('dateformat');
+const generateSantas = require('../lib');
 const { loadDataFile, writeDataFile } = require('./utils');
 const {
   getConfigFromCLIArguments,

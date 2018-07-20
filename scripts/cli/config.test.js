@@ -1,8 +1,8 @@
+const path = require('path');
 const {
   getConfigFromCLIArguments,
   getConfigFromConfigFile,
 } = require('./config');
-const path = require('path');
 const { version } = require('../../package.json');
 const { loadDataFile } = require('./utils.js');
 
