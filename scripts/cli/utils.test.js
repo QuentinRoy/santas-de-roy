@@ -1,6 +1,6 @@
-const utils = require('./utils');
 const fs = require('fs');
 const yaml = require('js-yaml');
+const utils = require('./utils');
 
 jest.mock('fs');
 jest.mock('js-yaml');

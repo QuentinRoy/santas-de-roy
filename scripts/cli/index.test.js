@@ -1,10 +1,10 @@
+const dateFormat = require('dateformat');
 const { doMain } = require('./index');
 const {
   getConfigFromCLIArguments,
   getConfigFromConfigFile,
 } = require('./config');
 const { loadDataFile, writeDataFile } = require('./utils');
-const dateFormat = require('dateformat');
 const generateSantas = require('../lib');
 
 jest.mock('js-yaml');

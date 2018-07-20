@@ -1,6 +1,6 @@
-const genSantas = require('./generate-santas');
 const munkres = require('munkres-js');
 const shuffle = require('lodash/shuffle');
+const genSantas = require('./generate-santas');
 
 jest.mock('munkres-js', () => jest.fn(() => []));
 jest.mock('lodash/shuffle', () => jest.fn(() => []));
