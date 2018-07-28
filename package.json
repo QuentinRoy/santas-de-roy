@@ -48,6 +48,7 @@
     "release": "standard-version"
   },
   "jest": {
+    "testEnvironment": "node",
     "collectCoverageFrom": [
       "scripts/**/*.js",
       "bin/**/*.js"
