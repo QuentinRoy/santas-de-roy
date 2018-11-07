@@ -1,5 +1,6 @@
-const deepMerge = require('deepmerge');
 const uniq = require('lodash/uniq');
+const mergeWith = require('lodash/mergeWith');
+const isArray = require('lodash/isArray');
 const { generateSantas } = require('./generate-santas');
 const { exclusionGroupsToBlacklists } = require('./utils');
 
@@ -53,10 +54,20 @@ const santasDeRoy = options => {
     throw new Error('No participants specified.');
   }
 
-  // Convert exclusion groups to blacklists and merge them with the blacklists.
-  const blackLists = deepMerge(
-    exclusionGroupsToBlacklists(exclusionGroups),
+  // Convert exclusion groups to blacklists.
+  const exclusionGroupsBlackLists = exclusionGroupsToBlacklists(
+    exclusionGroups,
+  );
+
+  const blackLists = mergeWith(
+    {},
     initBlackList,
+    exclusionGroupsBlackLists,
+    (value1, value2) => {
+      if (isArray(value1) && isArray(value2)) return [...value1, ...value2];
+      // Let mergeWith do the merging.
+      return undefined;
+    },
   );
 
   return generateSantas({ random, participants, history, blackLists });

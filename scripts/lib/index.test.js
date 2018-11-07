@@ -10,7 +10,7 @@ beforeEach(() => {
 });
 
 describe('santasDeRoy', () => {
-  it('proparly calls exclusionGroupsToBlacklists and generateSantas', () => {
+  it('properly calls exclusionGroupsToBlacklists and generateSantas', () => {
     utils.exclusionGroupsToBlacklists.mockReturnValue({
       anna: ['alice'],
       alice: ['anna'],
@@ -32,7 +32,7 @@ describe('santasDeRoy', () => {
       [
         {
           history: 'history',
-          blackLists: { anna: ['alice', 'jo'], jo: ['alice'], alice: ['anna'] },
+          blackLists: { anna: ['jo', 'alice'], jo: ['alice'], alice: ['anna'] },
           participants: 'participants',
           random: 'random',
         },
