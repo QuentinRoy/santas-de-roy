@@ -1,6 +1,6 @@
 const munkres = require('munkres-js');
 const shuffle = require('lodash/shuffle');
-const genSantas = require('./generate-santas');
+const generateReceivers = require('./generate-receivers');
 
 jest.mock('munkres-js', () => jest.fn(() => []));
 jest.mock('lodash/shuffle', () => jest.fn(() => []));
@@ -11,52 +11,61 @@ beforeEach(() => {
 
 describe('createCostMatrix', () => {
   test('it creates simple cost mastrix', () => {
-    expect(genSantas.createCostMatrix([], [], {})).toEqual([]);
-    expect(genSantas.createCostMatrix(['jo', 'anna', 'bob'], [], {})).toEqual([
-      [genSantas.MAX_COST, 0, 0],
-      [0, genSantas.MAX_COST, 0],
-      [0, 0, genSantas.MAX_COST],
+    expect(generateReceivers.createCostMatrix([], [], {})).toEqual([]);
+    expect(
+      generateReceivers.createCostMatrix(['jo', 'anna', 'bob'], [], {}),
+    ).toEqual([
+      [generateReceivers.MAX_COST, 0, 0],
+      [0, generateReceivers.MAX_COST, 0],
+      [0, 0, generateReceivers.MAX_COST],
     ]);
   });
 
   test('it takes into account history and blacklists', () => {
     expect(
-      genSantas.createCostMatrix(
+      generateReceivers.createCostMatrix(
         ['jo', 'anna', 'bob', 'jack'],
         [
           { jo: 'anna', bob: 'jack', jack: 'rob', rob: 'bob' },
           { jo: 'anna', bob: 'anna', anna: 'jack' },
         ],
         { jo: ['jack'], bob: ['jo', 'anna'] },
+        { jo: { bob: 1 } },
       ),
     ).toEqual([
-      [genSantas.MAX_COST, 2, 0, genSantas.MAX_COST],
-      [0, genSantas.MAX_COST, 0, 1],
-      [genSantas.MAX_COST, genSantas.MAX_COST, genSantas.MAX_COST, 1],
-      [0, 0, 0, genSantas.MAX_COST],
+      [generateReceivers.MAX_COST, 2, 0, generateReceivers.MAX_COST],
+      [0, generateReceivers.MAX_COST, 0, 1],
+      [
+        generateReceivers.MAX_COST,
+        generateReceivers.MAX_COST,
+        generateReceivers.MAX_COST,
+        1,
+      ],
+      [0, 0, 0, generateReceivers.MAX_COST],
     ]);
   });
 });
 
 describe('runAssignmentAlgo', () => {
-  const originalCreateCostMatrix = genSantas.createCostMatrix;
+  const originalCreateCostMatrix = generateReceivers.createCostMatrix;
   beforeEach(() => {
-    genSantas.createCostMatrix = jest.fn();
+    generateReceivers.createCostMatrix = jest.fn();
   });
   afterEach(() => {
-    genSantas.createCostMatrix = originalCreateCostMatrix;
+    generateReceivers.createCostMatrix = originalCreateCostMatrix;
   });
 
   test('it appropriately calls munkres and createCostMatrix', () => {
     // Set up mocks.
-    genSantas.createCostMatrix.mockReturnValue('costReturn');
+    generateReceivers.createCostMatrix.mockReturnValue('costReturn');
     // Test.
-    genSantas.runAssignmentAlgo(['jo', 'bob', 'ana'], { args: 'test' }, [
-      'foo',
-      'bar',
-    ]);
+    generateReceivers.runAssignmentAlgo(
+      ['jo', 'bob', 'ana'],
+      { args: 'test' },
+      ['foo', 'bar'],
+    );
     // Check the calls.
-    expect(genSantas.createCostMatrix.mock.calls).toEqual([
+    expect(generateReceivers.createCostMatrix.mock.calls).toEqual([
       [['jo', 'bob', 'ana'], { args: 'test' }, ['foo', 'bar']],
     ]);
     expect(munkres.mock.calls).toEqual([['costReturn']]);
@@ -64,7 +73,7 @@ describe('runAssignmentAlgo', () => {
 
   test('map back munkres results to participants', () => {
     munkres.mockReturnValue([[0, 2], [1, 0], [2, 1]]);
-    expect(genSantas.runAssignmentAlgo(['jo', 'bob', 'ana'])).toEqual({
+    expect(generateReceivers.runAssignmentAlgo(['jo', 'bob', 'ana'])).toEqual({
       jo: 'ana',
       bob: 'jo',
       ana: 'bob',
@@ -72,20 +81,20 @@ describe('runAssignmentAlgo', () => {
   });
 });
 
-describe('generateSantas', () => {
-  const originalRunAssignmentAlgo = genSantas.runAssignmentAlgo;
+describe('generateReceivers', () => {
+  const originalRunAssignmentAlgo = generateReceivers.runAssignmentAlgo;
   beforeEach(() => {
-    genSantas.runAssignmentAlgo = jest.fn(() => ({}));
+    generateReceivers.runAssignmentAlgo = jest.fn(() => ({}));
   });
   afterEach(() => {
-    genSantas.runAssignmentAlgo = originalRunAssignmentAlgo;
+    generateReceivers.runAssignmentAlgo = originalRunAssignmentAlgo;
   });
 
   test('it appropriately calls runAssignmentAlgo and returns its result when random is false', () => {
-    genSantas.runAssignmentAlgo.mockReturnValue({ foo: 'bar' });
+    generateReceivers.runAssignmentAlgo.mockReturnValue({ foo: 'bar' });
     // Test.
     expect(
-      genSantas.generateSantas({
+      generateReceivers.generateReceivers({
         random: false,
         participants: ['bar', 'foo'],
         history: 'history',
@@ -93,17 +102,17 @@ describe('generateSantas', () => {
       }),
     ).toEqual({ foo: 'bar' });
     // Check the calls.
-    expect(genSantas.runAssignmentAlgo.mock.calls).toEqual([
+    expect(generateReceivers.runAssignmentAlgo.mock.calls).toEqual([
       [['bar', 'foo'], 'history', 'blackLists'],
     ]);
   });
 
   test('it appropriately calls runAssignmentAlgo and shuffle and returns runAssignmentAlgo results when random is true', () => {
-    genSantas.runAssignmentAlgo.mockReturnValue({ foo: 'bar' });
+    generateReceivers.runAssignmentAlgo.mockReturnValue({ foo: 'bar' });
     shuffle.mockReturnValue(['mock', 'shuffle']);
     // Test.
     expect(
-      genSantas.generateSantas({
+      generateReceivers.generateReceivers({
         random: true,
         participants: ['bar', 'foo'],
         history: 'history',
@@ -112,7 +121,7 @@ describe('generateSantas', () => {
     ).toEqual({ foo: 'bar' });
     // Check the calls.
     expect(shuffle.mock.calls).toEqual([[['bar', 'foo']]]);
-    expect(genSantas.runAssignmentAlgo.mock.calls).toEqual([
+    expect(generateReceivers.runAssignmentAlgo.mock.calls).toEqual([
       [['mock', 'shuffle'], 'history', 'blackLists'],
     ]);
   });

@@ -1,7 +1,7 @@
 const uniq = require('lodash/uniq');
 const mergeWith = require('lodash/mergeWith');
 const isArray = require('lodash/isArray');
-const { generateSantas } = require('./generate-santas');
+const { generateReceivers } = require('./generate-receivers');
 const { exclusionGroupsToBlacklists } = require('./utils');
 
 /**
@@ -70,7 +70,7 @@ const santasDeRoy = options => {
     },
   );
 
-  return generateSantas({ random, participants, history, blackLists });
+  return generateReceivers({ random, participants, history, blackLists });
 };
 
 module.exports = santasDeRoy;

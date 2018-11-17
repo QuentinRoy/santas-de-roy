@@ -13,7 +13,9 @@ module.exports.MAX_COST = Number.POSITIVE_INFINITY;
  *
  * @private
  * @param {string[]} participants The list of all participants.
- * @param {List.<Object.<string,string>>} pastChristmases An array containing the previous attributions.
+ * @param {List.<Object.<string,string>>} pastChristmases An array containing
+ * the previous attributions. The keys are the santas and the values who
+ * they will give a present to.
  * @param {Object.<string,string[]>} blackLists a dictionary whose keys are
  * participants and values a list of participants they cannot be the santa of.
  * @return {Object.<int,int>} The new assignations.
@@ -38,7 +40,8 @@ module.exports.createCostMatrix = (participants, pastChristmases, blackLists) =>
  *
  * @private
  * @param {string[]} participants The list of all participants.
- * @param {List.<Object.<string,string>>} pastChristmases An array containing the previous attributions.
+ * @param {List.<Object.<string,string>>} pastChristmases An array containing
+ * the previous attributions.
  * @param {Object.<string,string[]>} blackLists a dictionary whose keys are
  * participants and values a list of participants they cannot be the santa of.
  * @return {Object.<string,string>} The new assignations.
@@ -65,13 +68,13 @@ module.exports.runAssignmentAlgo = (
   return assignations;
 };
 
-module.exports.generateSantas = ({
+module.exports.generateReceivers = ({
   random,
   participants,
   history,
   blackLists,
 }) => {
-  // Randomized (or not) the participants to make the algorithm underministic.
+  // Randomized (or not) the participants to make the algorithm indeterministic.
   const randomizedParticipants = random ? shuffle(participants) : participants;
 
   // Generate the assignations.

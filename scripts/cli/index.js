@@ -1,7 +1,7 @@
 const yaml = require('js-yaml');
 const log = require('loglevel');
 const dateFormat = require('dateformat');
-const generateSantas = require('../lib');
+const generateReceivers = require('../lib');
 const { loadDataFile, writeDataFile } = require('./utils');
 const {
   getConfigFromCLIArguments,
@@ -51,9 +51,9 @@ module.exports.doMain = async () => {
     throw new Error(`Identifier "${id}" already exists in data file.`);
   }
 
-  const santas = generateSantas({
+  const receivers = generateReceivers({
     participants,
-    history: ignoreHistory ? [] : history.map(c => c.santas),
+    history: ignoreHistory ? [] : history.map(c => c.receivers),
     blackLists,
     exclusionGroups,
     random,
@@ -61,14 +61,14 @@ module.exports.doMain = async () => {
 
   // Only print the results in verbose mode.
   if (!quiet) {
-    process.stdout.write(yaml.safeDump({ santas }));
+    process.stdout.write(yaml.safeDump({ receivers }));
   }
 
   if (!dryRun && dataPath) {
     const data = [
       ...history,
       {
-        santas,
+        receivers,
         ...(id ? { id } : null),
         date: dateFormat(new Date(), 'isoDateTime'),
       },

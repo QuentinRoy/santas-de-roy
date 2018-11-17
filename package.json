@@ -37,7 +37,7 @@
     "standard-version": "4.4.0"
   },
   "scripts": {
-    "generate-santas": "./bin/santas-de-roy.js",
+    "generate-receivers": "./bin/santas-de-roy.js",
     "postrewrite": "npm run git-hook",
     "precommit": "npm run git-hook",
     "commitmsg": "commitlint -e $GIT_PARAMS",

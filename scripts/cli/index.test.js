@@ -5,7 +5,7 @@ const {
   getConfigFromConfigFile,
 } = require('./config');
 const { loadDataFile, writeDataFile } = require('./utils');
-const generateSantas = require('../lib');
+const generateReceivers = require('../lib');
 
 jest.mock('js-yaml');
 jest.mock('loglevel');
@@ -28,7 +28,7 @@ describe('doMain', () => {
     process.argv = ['arg1', 'arg2'];
   });
 
-  test('merges cli arguments and config file for generateSantas options', async () => {
+  test('merges cli arguments and config file for generateReceivers options', async () => {
     getConfigFromCLIArguments.mockImplementation(() => ({
       config: 'conf',
       participants: 'participants',
@@ -41,8 +41,8 @@ describe('doMain', () => {
       exclusionGroups: 'exclusionGroups',
       data: 'dataPath',
     }));
-    generateSantas.mockImplementation(() => 'santas');
-    loadDataFile.mockImplementation(() => [{ santas: 'history' }]);
+    generateReceivers.mockImplementation(() => 'receivers');
+    loadDataFile.mockImplementation(() => [{ receivers: 'history' }]);
     dateFormat.mockImplementation(() => 'dateformat');
 
     await doMain();
@@ -55,7 +55,7 @@ describe('doMain', () => {
     expect(getConfigFromConfigFile.mock.calls).toEqual([
       ['conf'], // config returned by getConfigFromCLIArguments.
     ]);
-    expect(generateSantas.mock.calls).toEqual([
+    expect(generateReceivers.mock.calls).toEqual([
       [
         {
           blackLists: 'blackLists',
@@ -69,7 +69,10 @@ describe('doMain', () => {
     expect(writeDataFile.mock.calls).toEqual([
       [
         'dataPath',
-        [{ santas: 'history' }, { santas: 'santas', date: 'dateformat' }],
+        [
+          { receivers: 'history' },
+          { receivers: 'receivers', date: 'dateformat' },
+        ],
       ],
     ]);
   });

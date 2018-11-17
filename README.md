@@ -39,7 +39,7 @@ If you do not care about history, you can just write down the names of all parti
 For example:
 ```
 > santas-de-roy Tintin Snowy Haddock Dupond Dupont
-santas:
+receivers:
   Tintin: Snowy
   Snowy: Dupond
   Haddock: Bianca
@@ -47,7 +47,9 @@ santas:
   Dupont: Tintin
   Bianca: Dupont
 ```
-That's randomized by default, so if you run it again there is fair chance that nobody is going to have the same Santa again. But there is no guarantee it will not happen. Eventually it will.
+They keys are the santas, and the value the receivers.
+
+That's randomized by default, so if you run it again there is fair chance that nobody is going to have the same Santa again. But there is no guarantee it will not happen. Eventually it will. 
 
 ### History
 
@@ -56,7 +58,7 @@ But here comes the interesting part. If you provide a data path (YAML or JSON), 
 ```
 > santas-de-roy --data history.yaml Tintin Snowy Haddock Dupond Dupont
 2 past christmases found.
-santas:
+receivers:
   Tintin: Dupont
   Snowy: Bianca
   Haddock: Dupond

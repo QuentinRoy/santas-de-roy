@@ -1,8 +1,8 @@
 const santasDeRoy = require('./index');
-const generateSantas = require('./generate-santas');
+const generateReceivers = require('./generate-receivers');
 const utils = require('./utils');
 
-jest.mock('./generate-santas');
+jest.mock('./generate-receivers');
 jest.mock('./utils');
 
 beforeEach(() => {
@@ -10,12 +10,14 @@ beforeEach(() => {
 });
 
 describe('santasDeRoy', () => {
-  it('properly calls exclusionGroupsToBlacklists and generateSantas', () => {
+  it('properly calls exclusionGroupsToBlacklists and generateReceivers', () => {
     utils.exclusionGroupsToBlacklists.mockReturnValue({
       anna: ['alice'],
       alice: ['anna'],
     });
-    generateSantas.generateSantas.mockReturnValue('generateSantasReturn');
+    generateReceivers.generateReceivers.mockReturnValue(
+      'generateReceiversReturn',
+    );
     expect(
       santasDeRoy({
         history: 'history',
@@ -24,11 +26,11 @@ describe('santasDeRoy', () => {
         participants: 'participants',
         random: 'random',
       }),
-    ).toBe('generateSantasReturn');
+    ).toBe('generateReceiversReturn');
     expect(utils.exclusionGroupsToBlacklists.mock.calls).toEqual([
       ['exclusionGroups'],
     ]);
-    expect(generateSantas.generateSantas.mock.calls).toEqual([
+    expect(generateReceivers.generateReceivers.mock.calls).toEqual([
       [
         {
           history: 'history',
@@ -46,15 +48,15 @@ describe('santasDeRoy', () => {
       exclusionGroups: [['anna', 'alice'], ['jo', 'jack']],
     });
     expect(
-      generateSantas.generateSantas.mock.calls[0][0].participants.sort(),
+      generateReceivers.generateReceivers.mock.calls[0][0].participants.sort(),
     ).toEqual(['jo', 'anna', 'alice', 'jack'].sort());
   });
 
   it('can take an array as single arguments', () => {
     santasDeRoy(['bob', 'alice', 'bar', 'foo']);
-    expect(generateSantas.generateSantas.mock.calls[0][0].participants).toEqual(
-      ['bob', 'alice', 'bar', 'foo'],
-    );
+    expect(
+      generateReceivers.generateReceivers.mock.calls[0][0].participants,
+    ).toEqual(['bob', 'alice', 'bar', 'foo']);
   });
 
   it('throws if there is no possible participants', () => {
