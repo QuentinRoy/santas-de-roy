@@ -1,6 +1,7 @@
 const munkres = require('munkres-js');
 const shuffle = require('lodash/shuffle');
 const generateReceivers = require('./generate-receivers');
+const { NoSolutionsError } = require('./errors');
 
 jest.mock('munkres-js', () => jest.fn(() => []));
 jest.mock('lodash/shuffle', () => jest.fn(() => []));
@@ -46,18 +47,50 @@ describe('createCostMatrix', () => {
   });
 });
 
+describe('isImpossible', () => {
+  test('returns false if no assignation costs are under MAX_COST', () => {
+    expect(
+      generateReceivers.isImpossible(
+        [
+          [1, generateReceivers.MAX_COST, generateReceivers.MAX_COST],
+          [0, 0, generateReceivers.MAX_COST],
+          [generateReceivers.MAX_COST, generateReceivers.MAX_COST, 1],
+        ],
+        [[0, 0], [2, 2], [1, 1]],
+      ),
+    ).toBe(false);
+  });
+  test('returns true if at least one of the assignation costs is higher or equal to MAX_COST', () => {
+    expect(
+      generateReceivers.isImpossible(
+        [
+          [1, generateReceivers.MAX_COST, generateReceivers.MAX_COST],
+          [0, 0, generateReceivers.MAX_COST],
+          [generateReceivers.MAX_COST, generateReceivers.MAX_COST, 1],
+        ],
+        [[1, 0], [2, 2], [0, 1]],
+      ),
+    ).toBe(true);
+  });
+});
+
 describe('runAssignmentAlgo', () => {
   const originalCreateCostMatrix = generateReceivers.createCostMatrix;
+  const originalIsImpossible = generateReceivers.isImpossible;
   beforeEach(() => {
     generateReceivers.createCostMatrix = jest.fn();
+    generateReceivers.isImpossible = jest.fn(() => false);
   });
   afterEach(() => {
     generateReceivers.createCostMatrix = originalCreateCostMatrix;
+    generateReceivers.isImpossible = originalIsImpossible;
   });
 
-  test('it appropriately calls munkres and createCostMatrix', () => {
+  test('it appropriately calls munkres, createCostMatrix and isImpossible', () => {
     // Set up mocks.
     generateReceivers.createCostMatrix.mockReturnValue('costReturn');
+    munkres.mockReturnValue([['munkresReturn']]);
+    generateReceivers.isImpossible.mockReturnValue(false);
     // Test.
     generateReceivers.runAssignmentAlgo(
       ['jo', 'bob', 'ana'],
@@ -69,9 +102,18 @@ describe('runAssignmentAlgo', () => {
       [['jo', 'bob', 'ana'], { args: 'test' }, ['foo', 'bar']],
     ]);
     expect(munkres.mock.calls).toEqual([['costReturn']]);
+    expect(generateReceivers.isImpossible.mock.calls).toEqual([
+      ['costReturn', [['munkresReturn']]],
+    ]);
+  });
+  test('map back munkres results to participants', () => {
+    generateReceivers.isImpossible.mockReturnValue(true);
+    expect(() => {
+      generateReceivers.runAssignmentAlgo(['jo', 'bob', 'ana']);
+    }).toThrowError(NoSolutionsError);
   });
 
-  test('map back munkres results to participants', () => {
+  test('throws in case of impossibilities', () => {
     munkres.mockReturnValue([[0, 2], [1, 0], [2, 1]]);
     expect(generateReceivers.runAssignmentAlgo(['jo', 'bob', 'ana'])).toEqual({
       jo: 'ana',

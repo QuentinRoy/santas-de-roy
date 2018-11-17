@@ -58,7 +58,6 @@ module.exports.doMain = async () => {
     exclusionGroups,
     random,
   });
-
   // Only print the results in verbose mode.
   if (!quiet) {
     process.stdout.write(yaml.safeDump({ receivers }));
