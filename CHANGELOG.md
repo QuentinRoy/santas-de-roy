@@ -2,6 +2,29 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="1.0.0-beta.0"></a>
+# [1.0.0-beta.0](https://github.com/QuentinRoy/santa-des-roy/compare/v0.1.6...v1.0.0-beta.0) (2018-11-17)
+
+
+### Bug Fixes
+
+* fix some typos in the CLI descriptions ([93da88e](https://github.com/QuentinRoy/santa-des-roy/commit/93da88e))
+* remove deepmerge dependency to remove vulnerability ([e71655c](https://github.com/QuentinRoy/santa-des-roy/commit/e71655c))
+
+
+### Features
+
+* detect impossibilities ([6b30edf](https://github.com/QuentinRoy/santa-des-roy/commit/6b30edf)), closes [#6](https://github.com/QuentinRoy/santa-des-roy/issues/6)
+* rename santas to receivers in history files ([d7961a3](https://github.com/QuentinRoy/santa-des-roy/commit/d7961a3))
+* support for modifiers ([1f905fc](https://github.com/QuentinRoy/santa-des-roy/commit/1f905fc))
+
+
+### BREAKING CHANGES
+
+* the santas property of the history file has been renamed in receivers
+
+
+
 <a name="0.1.6"></a>
 ## [0.1.6](https://github.com/QuentinRoy/santa-des-roy/compare/v0.1.4...v0.1.6) (2018-02-21)
 
