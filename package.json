@@ -55,9 +55,9 @@
     ]
   },
   "dependencies": {
-    "commander": "^2.14.1",
+    "commander": "^2.19.0",
     "dateformat": "^3.0.3",
-    "js-yaml": "^3.10.0",
+    "js-yaml": "^3.12.0",
     "lodash": "^4.17.11",
     "loglevel": "^1.6.0",
     "munkres-js": "^1.2.2"
