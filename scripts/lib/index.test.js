@@ -25,6 +25,7 @@ describe('santasDeRoy', () => {
         exclusionGroups: 'exclusionGroups',
         participants: 'participants',
         random: 'random',
+        modifiers: 'modifiers',
       }),
     ).toBe('generateReceiversReturn');
     expect(utils.exclusionGroupsToBlacklists.mock.calls).toEqual([
@@ -37,6 +38,7 @@ describe('santasDeRoy', () => {
           blackLists: { anna: ['jo', 'alice'], jo: ['alice'], alice: ['anna'] },
           participants: 'participants',
           random: 'random',
+          modifiers: 'modifiers',
         },
       ],
     ]);

@@ -31,6 +31,7 @@ module.exports.doMain = async () => {
     exclusionGroups,
     blackLists,
     random,
+    modifiers,
     id,
     participants,
   } = { ...config, ...cliConfig };
@@ -57,6 +58,7 @@ module.exports.doMain = async () => {
     blackLists,
     exclusionGroups,
     random,
+    modifiers,
   });
   // Only print the results in verbose mode.
   if (!quiet) {

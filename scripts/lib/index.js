@@ -44,6 +44,7 @@ const santasDeRoy = options => {
       ...Object.keys(initBlackList),
     ]),
     random = true,
+    modifiers = {},
   } =
     Array.isArray(options) || options == null
       ? { participants: options }
@@ -70,7 +71,13 @@ const santasDeRoy = options => {
     },
   );
 
-  return generateReceivers({ random, participants, history, blackLists });
+  return generateReceivers({
+    random,
+    participants,
+    history,
+    blackLists,
+    modifiers,
+  });
 };
 
 module.exports = santasDeRoy;

@@ -18,6 +18,7 @@ const CONFIG_FILE_OPTIONS = [
   'exclusionGroups',
   'blackLists',
   'participants',
+  'modifiers',
 ];
 
 module.exports.getConfigFromConfigFile = async configPath => {

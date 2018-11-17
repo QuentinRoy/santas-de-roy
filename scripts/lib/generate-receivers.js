@@ -21,19 +21,30 @@ module.exports.MAX_COST = Number.MAX_VALUE;
  * they will give a present to.
  * @param {Object.<string,string[]>} blackLists a dictionary whose keys are
  * participants and values a list of participants they cannot be the santa of.
+ * @param {Object.<Object.<string,number>>} modifiers A dictionary of receiver
+ * assignation costs. Each key is a participant. Each values is a dictionary
+ * whose keys are potential receivers, and value a > 0 modifier to add to the
+ * assignation cost.
  * @return {Object.<int,int>} The cost matrix.
  */
-module.exports.createCostMatrix = (participants, pastChristmases, blackLists) =>
+module.exports.createCostMatrix = (
+  participants,
+  pastChristmases,
+  blackLists,
+  modifiers,
+) =>
   participants.map(santa => {
     const santaBlackList = blackLists[santa] || [];
+    const santaModifiers = modifiers[santa] || {};
     return participants.map(receiver => {
       if (receiver === santa || santaBlackList.includes(receiver)) {
         return module.exports.MAX_COST;
       }
+      const modifier = santaModifiers[receiver] || 0;
       return pastChristmases.reduce(
         (count, assignations) =>
           assignations[santa] === receiver ? count + 1 : count,
-        0,
+        modifier,
       );
     });
   });
@@ -53,17 +64,23 @@ module.exports.isImpossible = (costMatrix, munkresResult) =>
  * the previous attributions.
  * @param {Object.<string,string[]>} blackLists a dictionary whose keys are
  * participants and values a list of participants they cannot be the santa of.
+ * @param {Object.<Object.<string,number>>} modifiers A dictionary of receiver
+ * assignation costs. Each key is a participant. Each values is a dictionary
+ * whose keys are potential receivers, and value a > 0 modifier to add to the
+ * assignation cost.
  * @return {Object.<string,string>} The new assignations.
  */
 module.exports.runAssignmentAlgo = (
   participants,
   pastChristmases,
   blackLists,
+  modifiers,
 ) => {
   const costMatrix = module.exports.createCostMatrix(
     participants,
     pastChristmases,
     blackLists,
+    modifiers,
   );
 
   // Use the Munkres algorithm to get the assignation. Because the cost of an
@@ -94,6 +111,7 @@ module.exports.generateReceivers = ({
   participants,
   history,
   blackLists,
+  modifiers,
 }) => {
   // Randomized (or not) the participants to make the algorithm indeterministic.
   const randomizedParticipants = random ? shuffle(participants) : participants;
@@ -103,6 +121,7 @@ module.exports.generateReceivers = ({
     randomizedParticipants,
     history,
     blackLists,
+    modifiers,
   );
 
   // If the participants have been randomized, re-sort them.

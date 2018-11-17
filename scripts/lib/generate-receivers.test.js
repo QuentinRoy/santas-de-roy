@@ -12,9 +12,9 @@ beforeEach(() => {
 
 describe('createCostMatrix', () => {
   test('it creates simple cost mastrix', () => {
-    expect(generateReceivers.createCostMatrix([], [], {})).toEqual([]);
+    expect(generateReceivers.createCostMatrix([], [], {}, {})).toEqual([]);
     expect(
-      generateReceivers.createCostMatrix(['jo', 'anna', 'bob'], [], {}),
+      generateReceivers.createCostMatrix(['jo', 'anna', 'bob'], [], {}, {}),
     ).toEqual([
       [generateReceivers.MAX_COST, 0, 0],
       [0, generateReceivers.MAX_COST, 0],
@@ -22,7 +22,7 @@ describe('createCostMatrix', () => {
     ]);
   });
 
-  test('it takes into account history and blacklists', () => {
+  test('it takes into account history, blacklists and modifiers', () => {
     expect(
       generateReceivers.createCostMatrix(
         ['jo', 'anna', 'bob', 'jack'],
@@ -31,7 +31,7 @@ describe('createCostMatrix', () => {
           { jo: 'anna', bob: 'anna', anna: 'jack' },
         ],
         { jo: ['jack'], bob: ['jo', 'anna'] },
-        { jo: { bob: 1 } },
+        { jack: { bob: 0.5, jo: 1.5 }, bob: { anna: 2 }, jo: { anna: 0 } },
       ),
     ).toEqual([
       [generateReceivers.MAX_COST, 2, 0, generateReceivers.MAX_COST],
@@ -42,7 +42,7 @@ describe('createCostMatrix', () => {
         generateReceivers.MAX_COST,
         1,
       ],
-      [0, 0, 0, generateReceivers.MAX_COST],
+      [1.5, 0, 0.5, generateReceivers.MAX_COST],
     ]);
   });
 });
@@ -94,12 +94,18 @@ describe('runAssignmentAlgo', () => {
     // Test.
     generateReceivers.runAssignmentAlgo(
       ['jo', 'bob', 'ana'],
-      { args: 'test' },
+      { mockPast: {} },
       ['foo', 'bar'],
+      { mockModif: {} },
     );
     // Check the calls.
     expect(generateReceivers.createCostMatrix.mock.calls).toEqual([
-      [['jo', 'bob', 'ana'], { args: 'test' }, ['foo', 'bar']],
+      [
+        ['jo', 'bob', 'ana'],
+        { mockPast: {} },
+        ['foo', 'bar'],
+        { mockModif: {} },
+      ],
     ]);
     expect(munkres.mock.calls).toEqual([['costReturn']]);
     expect(generateReceivers.isImpossible.mock.calls).toEqual([
@@ -139,13 +145,14 @@ describe('generateReceivers', () => {
       generateReceivers.generateReceivers({
         random: false,
         participants: ['bar', 'foo'],
-        history: 'history',
-        blackLists: 'blackLists',
+        history: 'mock-history',
+        blackLists: 'mock-blackLists',
+        modifiers: 'mock-modifiers',
       }),
     ).toEqual({ foo: 'bar' });
     // Check the calls.
     expect(generateReceivers.runAssignmentAlgo.mock.calls).toEqual([
-      [['bar', 'foo'], 'history', 'blackLists'],
+      [['bar', 'foo'], 'mock-history', 'mock-blackLists', 'mock-modifiers'],
     ]);
   });
 
@@ -157,14 +164,20 @@ describe('generateReceivers', () => {
       generateReceivers.generateReceivers({
         random: true,
         participants: ['bar', 'foo'],
-        history: 'history',
-        blackLists: 'blackLists',
+        history: 'mock-history',
+        blackLists: 'mock-blackLists',
+        modifiers: 'mock-modifiers',
       }),
     ).toEqual({ foo: 'bar' });
     // Check the calls.
     expect(shuffle.mock.calls).toEqual([[['bar', 'foo']]]);
     expect(generateReceivers.runAssignmentAlgo.mock.calls).toEqual([
-      [['mock', 'shuffle'], 'history', 'blackLists'],
+      [
+        ['mock', 'shuffle'],
+        'mock-history',
+        'mock-blackLists',
+        'mock-modifiers',
+      ],
     ]);
   });
 });
