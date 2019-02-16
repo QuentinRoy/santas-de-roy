@@ -24,7 +24,7 @@
   "author": "Quentin Roy <quentin@quentinroy.fr>",
   "license": "MIT",
   "devDependencies": {
-    "@commitlint/cli": "7.5.1",
+    "@commitlint/cli": "7.5.2",
     "@commitlint/config-conventional": "7.5.0",
     "eslint": "5.13.0",
     "eslint-config-airbnb-base": "13.1.0",
