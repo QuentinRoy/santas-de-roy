@@ -1,6 +1,16 @@
-# Change Log
+# Changelog
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
+
+### [1.0.2](https://github.com/QuentinRoy/santa-des-roy/compare/v1.0.0-beta.0...v1.0.2) (2019-08-26)
+
+
+### Bug Fixes
+
+* fix an install warning ([42a354a](https://github.com/QuentinRoy/santa-des-roy/commit/42a354a))
+* update dependency commander to v3 ([e5a43ee](https://github.com/QuentinRoy/santa-des-roy/commit/e5a43ee))
+* update dependency js-yaml to v3.13.1 [security] ([9b2f90e](https://github.com/QuentinRoy/santa-des-roy/commit/9b2f90e))
+* update dependency lodash to v4.17.13 [security] ([81a8d42](https://github.com/QuentinRoy/santa-des-roy/commit/81a8d42))
 
 <a name="1.0.0-beta.0"></a>
 # [1.0.0-beta.0](https://github.com/QuentinRoy/santa-des-roy/compare/v0.1.6...v1.0.0-beta.0) (2018-11-17)
