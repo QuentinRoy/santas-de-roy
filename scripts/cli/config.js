@@ -71,13 +71,12 @@ module.exports.getConfigFromCLIArguments = argv => {
     )
     .parse(argv);
 
-  return Object.assign(
-    {},
-    pickBy(program.opts(), val => val !== undefined),
-    program.args && program.args.length > 0
+  return {
+    ...pickBy(program.opts(), val => val !== undefined),
+    ...(program.args && program.args.length > 0
       ? {
           participants: program.args,
         }
-      : undefined,
-  );
+      : undefined),
+  };
 };

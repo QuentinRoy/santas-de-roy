@@ -98,10 +98,7 @@ module.exports.runAssignmentAlgo = (
   const assignations = munkresResult
     .map(entry => entry.map(pi => participants[pi]))
     // Transform into a dictionary.
-    .reduce(
-      (obj, [santa, receiver]) => Object.assign({}, obj, { [santa]: receiver }),
-      {},
-    );
+    .reduce((obj, [santa, receiver]) => ({ ...obj, [santa]: receiver }), {});
 
   return assignations;
 };
@@ -127,7 +124,7 @@ module.exports.generateReceivers = ({
   // If the participants have been randomized, re-sort them.
   if (random) {
     return participants.reduce(
-      (obj, p) => Object.assign({}, obj, { [p]: assignations[p] }),
+      (obj, p) => ({ ...obj, [p]: assignations[p] }),
       {},
     );
   }
