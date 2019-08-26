@@ -9,15 +9,12 @@
  */
 module.exports.exclusionGroupsToBlacklists = exclusionGroups =>
   exclusionGroups.reduce(
-    (res, group) =>
-      Object.assign(
+    (res, group) => ({
+      ...res,
+      ...group.reduce(
+        (fRes, p) => ({ ...fRes, [p]: [...group, ...(res[p] || [])] }),
         {},
-        res,
-        group.reduce(
-          (fRes, p) =>
-            Object.assign({}, fRes, { [p]: [...group, ...(res[p] || [])] }),
-          {},
-        ),
       ),
+    }),
     {},
   );
