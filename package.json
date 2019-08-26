@@ -58,8 +58,8 @@
     "commander": "^3.0.0",
     "dateformat": "^3.0.3",
     "js-yaml": "^3.12.0",
-    "lodash": "^4.17.11",
-    "loglevel": "^1.6.0",
+    "lodash": "^4.17.15",
+    "loglevel": "^1.6.3",
     "munkres-js": "^1.2.2"
   }
 }
