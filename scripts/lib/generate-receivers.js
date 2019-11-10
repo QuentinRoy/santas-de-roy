@@ -16,9 +16,9 @@ module.exports.MAX_COST = Number.MAX_VALUE;
  *
  * @private
  * @param {string[]} participants The list of all participants.
- * @param {List.<Object.<string,string>>} pastChristmases An array containing
- * the previous attributions. The keys are the santas and the values who
- * they will give a present to.
+ * @param {List.<Object.<string,string|List.<string>>>} pastChristmases An array
+ * containing the previous attributions. The keys are the santas and the values
+ * who they gave a present to.
  * @param {Object.<string,string[]>} blackLists a dictionary whose keys are
  * participants and values a list of participants they cannot be the santa of.
  * @param {Object.<Object.<string,number>>} modifiers A dictionary of receiver
@@ -41,11 +41,17 @@ module.exports.createCostMatrix = (
         return module.exports.MAX_COST;
       }
       const modifier = santaModifiers[receiver] || 0;
-      return pastChristmases.reduce(
-        (count, assignations) =>
-          assignations[santa] === receiver ? count + 1 : count,
-        modifier,
-      );
+      return pastChristmases.reduce((count, assignations) => {
+        const receivers = assignations[santa];
+        if (
+          receivers == null ||
+          ((!Array.isArray(receivers) || !receivers.includes(receiver)) &&
+            receivers !== receiver)
+        ) {
+          return count;
+        }
+        return count + 1;
+      }, modifier);
     });
   });
 
@@ -60,8 +66,8 @@ module.exports.isImpossible = (costMatrix, munkresResult) =>
  *
  * @private
  * @param {string[]} participants The list of all participants.
- * @param {List.<Object.<string,string>>} pastChristmases An array containing
- * the previous attributions.
+ * @param {List.<Object.<string,string|List.<string>>>} pastChristmases An array
+ * containing the previous attributions.
  * @param {Object.<string,string[]>} blackLists a dictionary whose keys are
  * participants and values a list of participants they cannot be the santa of.
  * @param {Object.<Object.<string,number>>} modifiers A dictionary of receiver
@@ -106,7 +112,7 @@ module.exports.runAssignmentAlgo = (
 module.exports.generateReceivers = ({
   random,
   participants,
-  history,
+  history: pastChristmases,
   blackLists,
   modifiers,
 }) => {
@@ -116,7 +122,7 @@ module.exports.generateReceivers = ({
   // Generate the assignations.
   const assignations = module.exports.runAssignmentAlgo(
     randomizedParticipants,
-    history,
+    pastChristmases,
     blackLists,
     modifiers,
   );

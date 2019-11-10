@@ -21,8 +21,8 @@ const { exclusionGroupsToBlacklists } = require('./utils');
  * @param {string[]} [options.participants] The list of all participants.
  * If omitted, then the participants appearing in exclusionGroups and
  * as a blackLists key will be used.
- * @param {List.<Object.<string,string>>} [options.history] An array
- * containing the previous attributions (dictionaries whose keys are the
+ * @param {List.<Object.<string,string|List.<string>>>} [options.history] An
+ * array containing the previous attributions (dictionaries whose keys are the
  * santas, and values their receiver).
  * @param {Object.<string,string[]>} [options.blackLists] A dictionary whose
  * keys are participants and values a list of participants they cannot be the

@@ -11,7 +11,7 @@ beforeEach(() => {
 });
 
 describe('createCostMatrix', () => {
-  test('it creates simple cost mastrix', () => {
+  test('create a cost matrix when there is no history', () => {
     expect(generateReceivers.createCostMatrix([], [], {}, {})).toEqual([]);
     expect(
       generateReceivers.createCostMatrix(['jo', 'anna', 'bob'], [], {}, {}),
@@ -36,6 +36,35 @@ describe('createCostMatrix', () => {
     ).toEqual([
       [generateReceivers.MAX_COST, 2, 0, generateReceivers.MAX_COST],
       [0, generateReceivers.MAX_COST, 0, 1],
+      [
+        generateReceivers.MAX_COST,
+        generateReceivers.MAX_COST,
+        generateReceivers.MAX_COST,
+        1,
+      ],
+      [1.5, 0, 0.5, generateReceivers.MAX_COST],
+    ]);
+  });
+
+  test('it supports arrays of recipients in history', () => {
+    expect(
+      generateReceivers.createCostMatrix(
+        ['jo', 'anna', 'bob', 'jack'],
+        [
+          {
+            jo: ['anna', 'bob'],
+            bob: ['jack', 'rob'],
+            jack: 'rob',
+            rob: 'bob',
+          },
+          { jo: 'anna', bob: 'anna', anna: ['jack', 'jo'] },
+        ],
+        { jo: ['jack'], bob: ['jo', 'anna'] },
+        { jack: { bob: 0.5, jo: 1.5 }, bob: { anna: 2 }, jo: { anna: 0 } },
+      ),
+    ).toEqual([
+      [generateReceivers.MAX_COST, 2, 1, generateReceivers.MAX_COST],
+      [1, generateReceivers.MAX_COST, 0, 1],
       [
         generateReceivers.MAX_COST,
         generateReceivers.MAX_COST,

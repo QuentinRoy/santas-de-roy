@@ -27,7 +27,7 @@ npm install santas-de-roy
 
 Original.
 
-If you're only using the CLI and have internet access, you may not need to install it permanently and may want to use [npx](https://www.npmjs.com/package/npx)  (installed by default with node >= 5.2).
+If you're only using the CLI and have internet access, you may not need to install it permanently and may want to use [npx](https://www.npmjs.com/package/npx) (installed by default with node >= 5.2).
 
 ## CLI
 
@@ -37,6 +37,7 @@ Santa-De-Roy comes with a Command Line Interface: santas-de-roy.
 
 If you do not care about history, you can just write down the names of all participants as arguments.
 For example:
+
 ```
 > santas-de-roy Tintin Snowy Haddock Dupond Dupont
 receivers:
@@ -47,13 +48,14 @@ receivers:
   Dupont: Tintin
   Bianca: Dupont
 ```
+
 They keys are the santas, and the value the receivers.
 
-That's randomized by default, so if you run it again there is fair chance that nobody is going to have the same Santa again. But there is no guarantee it will not happen. Eventually it will. 
+That's randomized by default, so if you run it again there is fair chance that nobody is going to have the same Santa again. But there is no guarantee it will not happen. Eventually it will.
 
 ### History
 
-But here comes the interesting part. If you provide a data path (YAML or JSON), it will be used to save the results. And next time, will be re-used to *ensure* that nobody will get the same santa twice (as much as possible).
+But here comes the interesting part. If you provide a data path (YAML or JSON), it will be used to save the results. And next time, will be re-used to _ensure_ that nobody will get the same santa twice (as much as possible).
 
 ```
 > santas-de-roy --data history.yaml Tintin Snowy Haddock Dupond Dupont
@@ -115,6 +117,7 @@ quiet: false
 Config files can be YAML or JSON.
 
 ### Other CLI options
+
 ```
 > santas-de-roy --help
 
@@ -143,13 +146,13 @@ santas-de-roy is also a library that exports a single function.
 
 ### santasDeRoy(options) ⇒ <code>Object.&lt;string, string&gt;</code>
 
-**Returns**: <code>Object.&lt;string, string&gt;</code> - The new assignations.  
+**Returns**: <code>Object.&lt;string, string&gt;</code> - The new assignations.
 
-| Param | Type | Default | Description |
-| --- | --- | --- | --- |
-| options | <code>Object</code> \| <code>Array.&lt;string&gt;</code> |  | Options for the generation. Alternatively, an array of participants can be directly provided. |
-| [options.participants] | <code>Array.&lt;string&gt;</code> |  | The list of all participants. If omitted, then the participants appearing in exclusionGroups and as a blackLists key will be used. |
-| [options.history] | <code>List.&lt;Object.&lt;string, string&gt;&gt;</code> |  | An array containing the previous attributions (dictionaries whose keys are the santas, and values their receiver). |
-| [options.blackLists] | <code>Object.&lt;string, Array.&lt;string&gt;&gt;</code> |  | A dictionary whose keys are participants and values a list of participants they cannot be the santa of. |
-| [options.exclusionGroups] | <code>Array.&lt;Array.&lt;string&gt;&gt;</code> |  | Exclusion groups of participants. A participant cannot be the santa of someone who is in his exclusion group. |
-| [options.randomize] | <code>boolean</code> | <code>true</code> | If true (default), randomizes the assignation algorithm. Makes the output non deterministic. |
+| Param                     | Type                                                                         | Default           | Description                                                                                                                       |
+| ------------------------- | ---------------------------------------------------------------------------- | ----------------- | --------------------------------------------------------------------------------------------------------------------------------- |
+| options                   | <code>Object</code> \| <code>Array.&lt;string&gt;</code>                     |                   | Options for the generation. Alternatively, an array of participants can be directly provided.                                     |
+| [options.participants]    | <code>Array.&lt;string&gt;</code>                                            |                   | The list of all participants. If omitted, then the participants appearing in exclusionGroups or as a blackLists key will be used. |
+| [options.history]         | <code>List.&lt;Object.&lt;string, string\|List.&lt;string&gt;&gt;&gt;</code> |                   | An array containing the previous attributions (dictionaries whose keys are the santas, and values their receiver).                |
+| [options.blackLists]      | <code>Object.&lt;string, Array.&lt;string&gt;&gt;</code>                     |                   | A dictionary whose keys are participants and values a list of participants they cannot be the santa of.                           |
+| [options.exclusionGroups] | <code>Array.&lt;Array.&lt;string&gt;&gt;</code>                              |                   | Exclusion groups of participants. A participant cannot be the santa of someone who is in his exclusion group.                     |
+| [options.randomize]       | <code>boolean</code>                                                         | <code>true</code> | If true (default), randomizes the assignation algorithm. Makes the output non deterministic.                                      |
