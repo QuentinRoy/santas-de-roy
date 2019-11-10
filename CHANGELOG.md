@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.1.0](https://github.com/QuentinRoy/santa-des-roy/compare/v1.0.3...v1.1.0) (2019-11-10)
+
+
+### Features
+
+* history now supports lists of receivers ([f4243b9](https://github.com/QuentinRoy/santa-des-roy/commit/f4243b94d14058e55b734def55caa64c5dda6e52))
+
 ### [1.0.3](https://github.com/QuentinRoy/santa-des-roy/compare/v1.0.2...v1.0.3) (2019-08-26)
 
 
