@@ -56,7 +56,11 @@ describe('isImpossible', () => {
           [0, 0, generateReceivers.MAX_COST],
           [generateReceivers.MAX_COST, generateReceivers.MAX_COST, 1],
         ],
-        [[0, 0], [2, 2], [1, 1]],
+        [
+          [0, 0],
+          [2, 2],
+          [1, 1],
+        ],
       ),
     ).toBe(false);
   });
@@ -68,7 +72,11 @@ describe('isImpossible', () => {
           [0, 0, generateReceivers.MAX_COST],
           [generateReceivers.MAX_COST, generateReceivers.MAX_COST, 1],
         ],
-        [[1, 0], [2, 2], [0, 1]],
+        [
+          [1, 0],
+          [2, 2],
+          [0, 1],
+        ],
       ),
     ).toBe(true);
   });
@@ -120,7 +128,11 @@ describe('runAssignmentAlgo', () => {
   });
 
   test('throws in case of impossibilities', () => {
-    munkres.mockReturnValue([[0, 2], [1, 0], [2, 1]]);
+    munkres.mockReturnValue([
+      [0, 2],
+      [1, 0],
+      [2, 1],
+    ]);
     expect(generateReceivers.runAssignmentAlgo(['jo', 'bob', 'ana'])).toEqual({
       jo: 'ana',
       bob: 'jo',

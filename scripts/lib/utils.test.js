@@ -5,7 +5,10 @@ const { exclusionGroupsToBlacklists } = require('./utils');
 test('exclusionGroupsToBlacklists', () => {
   expect(
     mapValues(
-      exclusionGroupsToBlacklists([['bob', 'anna', 'jack'], ['bob', 'alice']]),
+      exclusionGroupsToBlacklists([
+        ['bob', 'anna', 'jack'],
+        ['bob', 'alice'],
+      ]),
       val => uniq(val).sort(),
     ),
   ).toEqual({

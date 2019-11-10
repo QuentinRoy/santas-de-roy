@@ -47,7 +47,10 @@ describe('santasDeRoy', () => {
   it('elicits participants from blackLists and exclusionGroups if they are not provided', () => {
     santasDeRoy({
       blackLists: { anna: ['jo'], jo: ['alice'] },
-      exclusionGroups: [['anna', 'alice'], ['jo', 'jack']],
+      exclusionGroups: [
+        ['anna', 'alice'],
+        ['jo', 'jack'],
+      ],
     });
     expect(
       generateReceivers.generateReceivers.mock.calls[0][0].participants.sort(),
