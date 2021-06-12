@@ -56,7 +56,7 @@
   },
   "dependencies": {
     "commander": "^4.0.0",
-    "dateformat": "^3.0.3",
+    "dateformat": "^4.0.0",
     "js-yaml": "^3.13.1",
     "lodash": "^4.17.15",
     "loglevel": "^1.6.6",
